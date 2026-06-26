@@ -11,14 +11,11 @@ export enum Collections {
 	Mfas = "_mfas",
 	Otps = "_otps",
 	Superusers = "_superusers",
-	Genre = "genre",
-	ListUser = "list_user",
-	Lists = "lists",
-	Movies = "movies",
-	MoviesGenres = "movies_genres",
+	FlameSettings = "flame_settings",
+	Applications = "applications",
+	BookmarkCategories = "bookmark_categories",
+	Bookmarks = "bookmarks",
 	Users = "users",
-	WatchHistoryUser = "watch_history_user",
-	WatchedHistory = "watched_history",
 }
 
 // Alias types for improved usability
@@ -99,60 +96,47 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
-export type GenreRecord = {
+export type FlameSettingsRecord = {
+	color_primary?: string
+	color_accent?: string
+	color_background?: string
+	weather_lat?: string
+	weather_lon?: string
+	weather_unit?: string
+	search_engine?: string
 	created: IsoAutoDateString
-	genre_id?: string
+	updated: IsoAutoDateString
 	id: string
+}
+
+export type ApplicationsRecord = {
 	name?: string
-	updated: IsoAutoDateString
-}
-
-export type ListUserRecord = {
-	created: IsoAutoDateString
-	id: string
-	invited_user?: RecordIdString
-	list?: RecordIdString
-	updated: IsoAutoDateString
-	user_permission?: string
-}
-
-export type ListsRecord = {
-	created: IsoAutoDateString
+	url?: string
+	icon?: string
 	description?: string
-	id: string
-	is_deleted?: boolean
-	is_private?: boolean
-	list_title?: string
-	owner?: RecordIdString
+	order?: number
+	created: IsoAutoDateString
 	updated: IsoAutoDateString
+	id: string
 }
 
-export type MoviesRecord = {
-	adult?: boolean
-	backdrop_path?: string
+export type BookmarkCategoriesRecord = {
+	name?: string
+	order?: number
 	created: IsoAutoDateString
-	homepage?: string
-	id: string
-	imdb_id?: string
-	original_language?: string
-	original_title?: string
-	overview?: string
-	poster_path?: string
-	release_date?: IsoDateString
-	runtime?: number
-	status?: string
-	tagline?: string
-	title?: string
-	tmdb_id?: string
 	updated: IsoAutoDateString
+	id: string
 }
 
-export type MoviesGenresRecord = {
+export type BookmarksRecord = {
+	name?: string
+	url?: string
+	icon?: string
+	category?: RecordIdString
+	order?: number
 	created: IsoAutoDateString
-	genre?: RecordIdString
-	id: string
-	movie?: RecordIdString
 	updated: IsoAutoDateString
+	id: string
 }
 
 export type UsersRecord = {
@@ -171,44 +155,17 @@ export type UsersRecord = {
 	verified?: boolean
 }
 
-export type WatchHistoryUserRecord = {
-	created: IsoAutoDateString
-	failed?: boolean
-	id: string
-	rating?: number
-	review?: HTMLString
-	updated: IsoAutoDateString
-	user?: RecordIdString
-	watch_history?: RecordIdString
-}
-
-export type WatchedHistoryRecord = {
-	added_by?: RecordIdString
-	created: IsoAutoDateString
-	id: string
-	imdb_score?: number
-	list?: RecordIdString
-	movie?: RecordIdString
-	rt_score?: number
-	tmdb_score?: number
-	updated: IsoAutoDateString
-	watched?: IsoDateString
-}
-
 // Response types include system fields and match responses from the PocketBase API
 export type AuthoriginsResponse<Texpand = unknown> = Required<AuthoriginsRecord> & BaseSystemFields<Texpand>
 export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRecord> & BaseSystemFields<Texpand>
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
-export type GenreResponse<Texpand = unknown> = Required<GenreRecord> & BaseSystemFields<Texpand>
-export type ListUserResponse<Texpand = unknown> = Required<ListUserRecord> & BaseSystemFields<Texpand>
-export type ListsResponse<Texpand = unknown> = Required<ListsRecord> & BaseSystemFields<Texpand>
-export type MoviesResponse<Texpand = unknown> = Required<MoviesRecord> & BaseSystemFields<Texpand>
-export type MoviesGenresResponse<Texpand = unknown> = Required<MoviesGenresRecord> & BaseSystemFields<Texpand>
+export type FlameSettingsResponse<Texpand = unknown> = Required<FlameSettingsRecord> & BaseSystemFields<Texpand>
+export type ApplicationsResponse<Texpand = unknown> = Required<ApplicationsRecord> & BaseSystemFields<Texpand>
+export type BookmarkCategoriesResponse<Texpand = unknown> = Required<BookmarkCategoriesRecord> & BaseSystemFields<Texpand>
+export type BookmarksResponse<Texpand = unknown> = Required<BookmarksRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
-export type WatchHistoryUserResponse<Texpand = unknown> = Required<WatchHistoryUserRecord> & BaseSystemFields<Texpand>
-export type WatchedHistoryResponse<Texpand = unknown> = Required<WatchedHistoryRecord> & BaseSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
@@ -218,14 +175,11 @@ export type CollectionRecords = {
 	_mfas: MfasRecord
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
-	genre: GenreRecord
-	list_user: ListUserRecord
-	lists: ListsRecord
-	movies: MoviesRecord
-	movies_genres: MoviesGenresRecord
+	flame_settings: FlameSettingsRecord
+	applications: ApplicationsRecord
+	bookmark_categories: BookmarkCategoriesRecord
+	bookmarks: BookmarksRecord
 	users: UsersRecord
-	watch_history_user: WatchHistoryUserRecord
-	watched_history: WatchedHistoryRecord
 }
 
 export type CollectionResponses = {
@@ -234,14 +188,11 @@ export type CollectionResponses = {
 	_mfas: MfasResponse
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
-	genre: GenreResponse
-	list_user: ListUserResponse
-	lists: ListsResponse
-	movies: MoviesResponse
-	movies_genres: MoviesGenresResponse
+	flame_settings: FlameSettingsResponse
+	applications: ApplicationsResponse
+	bookmark_categories: BookmarkCategoriesResponse
+	bookmarks: BookmarksResponse
 	users: UsersResponse
-	watch_history_user: WatchHistoryUserResponse
-	watched_history: WatchedHistoryResponse
 }
 
 // Utility types for create/update operations

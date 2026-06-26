@@ -1,23 +1,24 @@
-# Dank Movies
+# Flame Startpage Clone
 
-**Dank Movies** is a modern, self-hosted movie watchlist application that lets you discover films, curate personal collections, and share them with friends. Built for movie lovers who want control over their data with a premium user experience.
+**Flame Startpage Clone** is a self-hosted, lightweight, and customizable startpage and bookmarks manager designed for your home server. Inspired by Flame, it lets you organize your daily applications and bookmarked links in one gorgeous dashboard.
 
 ## Features
 
--   **Movie Discovery**: Instantly search for millions of movies powered by the **TMDB API**.
--   **Smart Watchlists**: Create unlimited public or private watchlists to organize your movie backlog.
--   **Collaboration**: Share private watchlists with specific users for collaborative planning.
--   **Secure & Private**: Built-in User Authentication (Email/Password & Google OAuth) keeps your lists secure.
--   **Modern Design**: Stunning UI features glassmorphism, smooth animations, and a responsive layout powered by Tailwind CSS & DaisyUI.
--   **Dark Mode**: Easy on the eyes with a sleek dark theme.
+-   **Clean Dashboard**: Centered search bar with quick keyboard filtering for instant access to your apps and bookmarks.
+-   **Applications Grid**: Display cards for your self-hosted services, complete with custom title descriptions and inline SVGs.
+-   **Grouped Bookmarks**: Categorize links (e.g. documents, repositories, news) with custom icons.
+-   **Weather Widget**: Integrated weather checking powered by the free Open-Meteo API.
+-   **Settings Management**: A comprehensive admin dashboard to configure theme colors (Primary, Accent, Background), weather latitude/longitude, add/edit/delete applications, categories, and bookmarks.
+-   **Secure & Private**: Optional authentication to secure settings management.
+-   **Modern Design**: Sleek layout, custom variables for custom color branding, responsive layout.
 
 ## Tech Stack
 
-This project is built on a robust and simple stack designed for performance and ease of deployment.
+This project is built on a highly performant and simple stack:
 
--   **Backend**: [PocketBase](https://pocketbase.io/) (Golang + SQLite embedded DB) - Handles Auth, Database, and API.
+-   **Backend**: [PocketBase](https://pocketbase.io/) (Golang + SQLite embedded DB) - Handles Authentication, database storage, and API.
 -   **Frontend**: [PocketPages](https://github.com/pocketpages/pocketpages) - Server-side rendering using **EJS**.
--   **Interactivity**: [Alpine.js](https://alpinejs.dev/) - For lightweight, reactive UI components (Modals, Search).
+-   **Interactivity**: [Alpine.js](https://alpinejs.dev/) - For lightweight, reactive UI components (Modals, Search, Forms).
 -   **Styling**: [Tailwind CSS](https://tailwindcss.com/) + [DaisyUI](https://daisyui.com/).
 
 ## Getting Started
@@ -27,15 +28,14 @@ Follow these steps to get your own instance running locally.
 ### Prerequisites
 
 -   **Node.js** (LTS version recommended)
--   **PocketBase**: Download the binary for your OS from [pocketbase.io/docs](https://pocketbase.io/docs/) and ensure it's in your PATH (or placed in the project root).
--   **TMDB API Key**: Get a free API key from [The Movie Database](https://www.themoviedb.org/documentation/api).
+-   **PocketBase**: PocketBase is embedded and managed via npm commands.
 
 ### Installation
 
 1.  **Clone the repository**:
     ```bash
-    git clone https://github.com/kimjust6/pocket-movies.git
-    cd pocket-movies
+    git clone https://github.com/kimjust6/pocket-flame-clone.git
+    cd pocket-flame-clone
     ```
 
 2.  **Install dependencies**:
@@ -43,32 +43,25 @@ Follow these steps to get your own instance running locally.
     npm install
     ```
 
-3.  **Set Environment Variables**:
-    Create a `.env` file or export the variable in your shell:
-    ```bash
-    export TMDB_API_KEY="your_tmdb_api_key_here"
-    ```
-
-4.  **Run the App**:
+3.  **Run the App**:
     This command starts the Tailwind watcher and the PocketBase server in dev mode.
     ```bash
     npm run dev
     ```
+    If you are running in a WSL environment:
+    ```bash
+    npm run wsl
+    ```
 
-5.  **Visit the App**:
+4.  **Visit the App**:
     Open [http://localhost:8090](http://localhost:8090) in your browser.
 
 ## Project Structure
 
 -   `pb_hooks/` - Server-side logic and templates.
-    -   `pages/` - EJS templates and route handlers (PocketPages).
-    -   `*.pb.js` - PocketBase hooks and extensions.
--   `pb_public/` - Static assets (compiled CSS, images).
+-   `pb_migrations/` - PocketBase database schema definition and seeding.
+-   `pb_public/` - Static assets (compiled CSS, client JS).
 -   `pb_data/` - Local database and storage (created after first run).
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
