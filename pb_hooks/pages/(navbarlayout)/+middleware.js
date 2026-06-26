@@ -11,6 +11,37 @@ const BASE_URL = 'https://movie.jkim.win';
 module.exports = function (context) {
     const { client, user } = common.init(context)
 
+    let settings = {
+        color_primary: "#d9d9d9",
+        color_accent: "#50fbc2",
+        color_background: "#282525",
+        weather_lat: "43.6532",
+        weather_lon: "-79.3832",
+        weather_unit: "celsius",
+        search_engine: "https://www.google.com/search?q="
+    };
+
+    try {
+        const record = $app.findFirstRecord("flame_settings");
+        if (record) {
+            settings = {
+                color_primary: record.getString("color_primary") || settings.color_primary,
+                color_accent: record.getString("color_accent") || settings.color_accent,
+                color_background: record.getString("color_background") || settings.color_background,
+                weather_lat: record.getString("weather_lat") || settings.weather_lat,
+                weather_lon: record.getString("weather_lon") || settings.weather_lon,
+                weather_unit: record.getString("weather_unit") || settings.weather_unit,
+                search_engine: record.getString("search_engine") || settings.search_engine
+            };
+        }
+    } catch (e) {
+        // collection doesn't exist yet or is empty
+    }
+
+    if (context.locals) {
+        context.locals.settings = settings;
+    }
+
     let userWatchlists = []
 
     if (user) {
@@ -32,6 +63,7 @@ module.exports = function (context) {
     }
 
     return {
+        settings,
         userWatchlists,
         metadata: [
             // Basic metadata
