@@ -38,7 +38,7 @@ module.exports = function (context) {
                 const catBookmarks = bookmarks.filter(b => b.getString("category") === cat.id);
                 return {
                     id: cat.id,
-                    name: cat.getString("name"),
+                    name: cat.name,
                     order: cat.order,
                     bookmarks: catBookmarks.map(b => ({
                         id: b.id,
