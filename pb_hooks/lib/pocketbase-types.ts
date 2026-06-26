@@ -5,18 +5,19 @@
 import type PocketBase from 'pocketbase'
 import type { RecordService } from 'pocketbase'
 
-export enum Collections {
-	Authorigins = "_authOrigins",
-	Externalauths = "_externalAuths",
-	Mfas = "_mfas",
-	Otps = "_otps",
-	Superusers = "_superusers",
-	FlameSettings = "flame_settings",
-	Applications = "applications",
-	BookmarkCategories = "bookmark_categories",
-	Bookmarks = "bookmarks",
-	Users = "users",
-}
+export const Collections = {
+	Authorigins: "_authOrigins",
+	Externalauths: "_externalAuths",
+	Mfas: "_mfas",
+	Otps: "_otps",
+	Superusers: "_superusers",
+	Applications: "applications",
+	BookmarkCategories: "bookmark_categories",
+	Bookmarks: "bookmarks",
+	FlameSettings: "flame_settings",
+	Users: "users",
+} as const
+export type Collections = typeof Collections[keyof typeof Collections]
 
 // Alias types for improved usability
 export type IsoDateString = string
@@ -96,47 +97,47 @@ export type SuperusersRecord = {
 	verified?: boolean
 }
 
-export type FlameSettingsRecord = {
-	color_primary?: string
-	color_accent?: string
-	color_background?: string
-	weather_lat?: string
-	weather_lon?: string
-	weather_unit?: string
-	search_engine?: string
-	created: IsoAutoDateString
-	updated: IsoAutoDateString
-	id: string
-}
-
 export type ApplicationsRecord = {
-	name?: string
-	url?: string
-	icon?: string
-	description?: string
-	order?: number
 	created: IsoAutoDateString
-	updated: IsoAutoDateString
+	description?: string
+	icon?: string
 	id: string
+	name: string
+	order?: number
+	updated: IsoAutoDateString
+	url: string
 }
 
 export type BookmarkCategoriesRecord = {
-	name?: string
-	order?: number
 	created: IsoAutoDateString
-	updated: IsoAutoDateString
 	id: string
+	name: string
+	order?: number
+	updated: IsoAutoDateString
 }
 
 export type BookmarksRecord = {
-	name?: string
-	url?: string
-	icon?: string
-	category?: RecordIdString
-	order?: number
+	category: RecordIdString
 	created: IsoAutoDateString
-	updated: IsoAutoDateString
+	icon?: string
 	id: string
+	name: string
+	order?: number
+	updated: IsoAutoDateString
+	url: string
+}
+
+export type FlameSettingsRecord = {
+	color_accent?: string
+	color_background?: string
+	color_primary?: string
+	created: IsoAutoDateString
+	id: string
+	search_engine?: string
+	updated: IsoAutoDateString
+	weather_lat?: string
+	weather_lon?: string
+	weather_unit?: string
 }
 
 export type UsersRecord = {
@@ -161,10 +162,10 @@ export type ExternalauthsResponse<Texpand = unknown> = Required<ExternalauthsRec
 export type MfasResponse<Texpand = unknown> = Required<MfasRecord> & BaseSystemFields<Texpand>
 export type OtpsResponse<Texpand = unknown> = Required<OtpsRecord> & BaseSystemFields<Texpand>
 export type SuperusersResponse<Texpand = unknown> = Required<SuperusersRecord> & AuthSystemFields<Texpand>
-export type FlameSettingsResponse<Texpand = unknown> = Required<FlameSettingsRecord> & BaseSystemFields<Texpand>
 export type ApplicationsResponse<Texpand = unknown> = Required<ApplicationsRecord> & BaseSystemFields<Texpand>
 export type BookmarkCategoriesResponse<Texpand = unknown> = Required<BookmarkCategoriesRecord> & BaseSystemFields<Texpand>
 export type BookmarksResponse<Texpand = unknown> = Required<BookmarksRecord> & BaseSystemFields<Texpand>
+export type FlameSettingsResponse<Texpand = unknown> = Required<FlameSettingsRecord> & BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>
 
 // Types containing all Records and Responses, useful for creating typing helper functions
@@ -175,10 +176,10 @@ export type CollectionRecords = {
 	_mfas: MfasRecord
 	_otps: OtpsRecord
 	_superusers: SuperusersRecord
-	flame_settings: FlameSettingsRecord
 	applications: ApplicationsRecord
 	bookmark_categories: BookmarkCategoriesRecord
 	bookmarks: BookmarksRecord
+	flame_settings: FlameSettingsRecord
 	users: UsersRecord
 }
 
@@ -188,10 +189,10 @@ export type CollectionResponses = {
 	_mfas: MfasResponse
 	_otps: OtpsResponse
 	_superusers: SuperusersResponse
-	flame_settings: FlameSettingsResponse
 	applications: ApplicationsResponse
 	bookmark_categories: BookmarkCategoriesResponse
 	bookmarks: BookmarksResponse
+	flame_settings: FlameSettingsResponse
 	users: UsersResponse
 }
 
