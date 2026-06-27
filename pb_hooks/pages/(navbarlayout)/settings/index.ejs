@@ -36,28 +36,28 @@
         class="border-[color:var(--color-primary)]/10 mb-8 flex gap-2 overflow-x-auto border-b pb-4"
     >
         <button
-            @click="activeTab = 'general'"
+            @click="setActiveTab('general')"
             :class="activeTab === 'general' ? 'border-[color:var(--color-accent)] text-[color:var(--color-accent)]' : 'border-transparent opacity-60 hover:opacity-100'"
             class="border-b-2 px-4 py-2 text-sm font-semibold transition-all"
         >
             General & Theme
         </button>
         <button
-            @click="activeTab = 'apps'"
+            @click="setActiveTab('apps')"
             :class="activeTab === 'apps' ? 'border-[color:var(--color-accent)] text-[color:var(--color-accent)]' : 'border-transparent opacity-60 hover:opacity-100'"
             class="border-b-2 px-4 py-2 text-sm font-semibold transition-all"
         >
             Applications
         </button>
         <button
-            @click="activeTab = 'categories'"
+            @click="setActiveTab('categories')"
             :class="activeTab === 'categories' ? 'border-[color:var(--color-accent)] text-[color:var(--color-accent)]' : 'border-transparent opacity-60 hover:opacity-100'"
             class="border-b-2 px-4 py-2 text-sm font-semibold transition-all"
         >
             Categories
         </button>
         <button
-            @click="activeTab = 'bookmarks'"
+            @click="setActiveTab('bookmarks')"
             :class="activeTab === 'bookmarks' ? 'border-[color:var(--color-accent)] text-[color:var(--color-accent)]' : 'border-transparent opacity-60 hover:opacity-100'"
             class="border-b-2 px-4 py-2 text-sm font-semibold transition-all"
         >
@@ -829,6 +829,14 @@
                 if (tab && ['general', 'apps', 'categories', 'bookmarks'].includes(tab)) {
                     this.activeTab = tab;
                 }
+            },
+
+            setActiveTab(tab) {
+                if (!['general', 'apps', 'categories', 'bookmarks'].includes(tab)) return;
+                this.activeTab = tab;
+                const url = new URL(window.location.href);
+                url.searchParams.set('tab', tab);
+                window.history.replaceState({}, '', `${url.pathname}?${url.searchParams.toString()}`);
             },
 
             async saveSettings() {
