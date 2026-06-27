@@ -40,7 +40,10 @@ module.exports = function (context) {
                 order: cat.getInt("order")
             }));
 
-            const bookmarks = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
+            let bookmarks = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
+            if (!bookmarks || bookmarks.length === 0) {
+                bookmarks = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
+            }
 
             bookmarksByCategory = categories.map(cat => {
                 const catBookmarks = bookmarks.filter(b => b.getString("category") === cat.id);
@@ -56,7 +59,7 @@ module.exports = function (context) {
                         order: b.getInt("order")
                     }))
                 };
-            }).filter(c => c.bookmarks.length > 0);
+            });
         } catch (e) {
             console.error("Failed to fetch bookmarks:", e);
         }
