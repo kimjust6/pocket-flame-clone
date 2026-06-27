@@ -1,32 +1,51 @@
-<div x-data="flameDashboard()" class="w-full max-w-6xl mx-auto px-4 py-8 md:py-16 min-h-screen flex flex-col justify-start">
-    
+<div
+    x-data="flameDashboard()"
+    class="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-start px-4 py-8 md:py-16"
+>
     <!-- Search Bar Section -->
-    <div class="w-full max-w-xl mx-auto mb-10">
-        <input type="text" 
-               x-model="searchQuery" 
-               @keydown.enter="handleSearchEnter()"
-               placeholder="Search..." 
-               class="w-full px-6 py-4 rounded-xl border border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/5 text-[color:var(--color-primary)] placeholder-[color:var(--color-primary)]/40 focus:outline-none focus:border-[color:var(--color-accent)] focus:ring-1 focus:ring-[color:var(--color-accent)] transition-all text-center text-lg shadow-lg backdrop-blur-md"
-               autofocus>
+    <div class="mx-auto mb-10 w-full max-w-xl">
+        <input
+            type="text"
+            x-model="searchQuery"
+            @keydown.enter="handleSearchEnter()"
+            placeholder="Search..."
+            class="border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/5 placeholder-[color:var(--color-primary)]/40 w-full rounded-xl border px-6 py-4 text-center text-lg text-[color:var(--color-primary)] shadow-lg backdrop-blur-md transition-all focus:border-[color:var(--color-accent)] focus:outline-none focus:ring-1 focus:ring-[color:var(--color-accent)]"
+            autofocus
+        />
     </div>
 
     <!-- Header Section -->
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-12 border-b border-[color:var(--color-primary)]/10 pb-8">
+    <header
+        class="border-[color:var(--color-primary)]/10 mb-12 flex flex-col items-start justify-between gap-4 border-b pb-8 sm:flex-row sm:items-center"
+    >
         <div>
-            <p class="text-sm opacity-60 mb-1 tracking-wide font-medium" x-text="currentDate"></p>
+            <p
+                class="mb-1 text-sm font-medium tracking-wide opacity-60"
+                x-text="currentDate"
+            ></p>
             <span class="flex items-center gap-4">
-                <h1 class="text-4xl font-extrabold tracking-tight text-[color:var(--color-primary)]" x-text="greeting || 'Good evening!'"></h1>
+                <h1
+                    class="text-4xl font-extrabold tracking-tight text-[color:var(--color-primary)]"
+                    x-text="greeting || 'Good evening!'"
+                ></h1>
             </span>
         </div>
         <div class="flex items-center gap-4 self-end sm:self-auto">
             <!-- Weather Widget -->
-            <div x-show="weatherTemp" x-transition class="flex items-center gap-2 text-base font-semibold bg-[color:var(--color-primary)]/5 border border-[color:var(--color-primary)]/10 px-4 py-2 rounded-xl backdrop-blur-md">
+            <div
+                x-show="weatherTemp"
+                x-transition
+                class="bg-[color:var(--color-primary)]/5 border-[color:var(--color-primary)]/10 flex items-center gap-2 rounded-xl border px-4 py-2 text-base font-semibold backdrop-blur-md"
+            >
                 <span class="text-xl" x-text="weatherIcon"></span>
                 <span class="opacity-80" x-text="weatherTemp"></span>
             </div>
-            
+
             <!-- Settings Link -->
-            <a href="/settings" class="text-sm font-semibold opacity-70 hover:opacity-100 hover:text-[color:var(--color-accent)] transition-all border border-[color:var(--color-primary)]/20 hover:border-[color:var(--color-accent)] px-4 py-2 rounded-xl backdrop-blur-md">
+            <a
+                href="/settings"
+                class="border-[color:var(--color-primary)]/20 rounded-xl border px-4 py-2 text-sm font-semibold opacity-70 backdrop-blur-md transition-all hover:border-[color:var(--color-accent)] hover:text-[color:var(--color-accent)] hover:opacity-100"
+            >
                 Go to Settings
             </a>
         </div>
@@ -34,25 +53,52 @@
 
     <!-- Applications Section -->
     <section class="mb-12" x-show="filterApps().length > 0" x-transition>
-        <div class="flex justify-between items-center mb-6">
+        <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <h2 class="text-xs font-bold tracking-widest uppercase opacity-55">Applications</h2>
-                <button @click="openAppModal()" class="w-5 h-5 rounded-full flex items-center justify-center bg-[color:var(--color-accent)] text-[color:var(--color-background)] hover:scale-110 transition-transform text-xs font-black shadow-sm" title="Add Application">+</button>
+                <h2
+                    class="text-xs font-bold uppercase tracking-widest opacity-55"
+                >
+                    Applications
+                </h2>
+                <button
+                    @click="openAppModal()"
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--color-accent)] text-xs font-black text-[color:var(--color-background)] shadow-sm transition-transform hover:scale-110"
+                    title="Add Application"
+                >
+                    +
+                </button>
             </div>
-            <a href="/settings?tab=apps" class="text-xs opacity-50 hover:opacity-100 hover:text-[color:var(--color-accent)] transition-all">Manage</a>
+            <a
+                href="/settings?tab=apps"
+                class="text-xs opacity-50 transition-all hover:text-[color:var(--color-accent)] hover:opacity-100"
+                >Manage</a
+            >
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div
+            class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+        >
             <template x-for="app in filterApps()" :key="app.id">
-                <a :href="app.url" target="_blank" rel="noreferrer" 
-                   class="flex items-center gap-4 p-4 rounded-xl border border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/3 hover:bg-[color:var(--color-primary)]/5 hover:border-[color:var(--color-accent)]/30 transition-all group shadow-sm">
+                <a
+                    :href="app.url"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/3 hover:bg-[color:var(--color-primary)]/5 hover:border-[color:var(--color-accent)]/30 group flex items-center gap-4 rounded-xl border p-4 shadow-sm transition-all"
+                >
                     <!-- App Icon (SVG fallback) -->
-                    <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center text-[color:var(--color-accent)] group-hover:scale-105 transition-transform" 
-                         x-html="app.icon || `<svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9'></path></svg>`">
-                    </div>
+                    <div
+                        class="flex h-10 w-10 flex-shrink-0 items-center justify-center text-[color:var(--color-accent)] transition-transform group-hover:scale-105"
+                        x-html="app.icon || `<svg class='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9'></path></svg>`"
+                    ></div>
                     <!-- App Details -->
                     <div class="min-w-0 flex-grow">
-                        <h5 class="font-bold text-sm text-[color:var(--color-primary)] group-hover:text-[color:var(--color-accent)] transition-colors truncate" x-text="app.name"></h5>
-                        <span class="text-xs opacity-50 truncate block mt-0.5" x-text="app.description || app.url.replace(/^https?:\/\//, '')"></span>
+                        <h5
+                            class="truncate text-sm font-bold text-[color:var(--color-primary)] transition-colors group-hover:text-[color:var(--color-accent)]"
+                            x-text="app.name"
+                        ></h5>
+                        <span
+                            class="mt-0.5 block truncate text-xs opacity-50"
+                            x-text="app.description || app.url.replace(/^https?:\/\//, '')"
+                        ></span>
                     </div>
                 </a>
             </template>
@@ -60,35 +106,80 @@
     </section>
 
     <!-- Empty State for Apps -->
-    <div x-show="apps.length === 0" class="text-center py-12 border border-dashed border-[color:var(--color-primary)]/10 rounded-xl mb-12">
-        <p class="text-sm opacity-50 mb-3">No applications configured yet.</p>
-        <button @click="openAppModal()" class="btn btn-xs btn-outline border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]">Add your first app</button>
+    <div
+        x-show="apps.length === 0"
+        class="border-[color:var(--color-primary)]/10 mb-12 rounded-xl border border-dashed py-12 text-center"
+    >
+        <p class="mb-3 text-sm opacity-50">No applications configured yet.</p>
+        <button
+            @click="openAppModal()"
+            class="btn btn-outline btn-xs border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]"
+        >
+            Add your first app
+        </button>
     </div>
 
-    <div class="w-full h-8"></div>
+    <div class="h-8 w-full"></div>
 
     <!-- Bookmarks Section -->
     <section class="mb-12" x-show="filterBookmarks().length > 0" x-transition>
-        <div class="flex justify-between items-center mb-6">
+        <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <h2 class="text-xs font-bold tracking-widest uppercase opacity-55">Bookmarks</h2>
-                <button @click="openBookmarkModal()" class="w-5 h-5 rounded-full flex items-center justify-center bg-[color:var(--color-accent)] text-[color:var(--color-background)] hover:scale-110 transition-transform text-xs font-black shadow-sm" title="Add Bookmark" :disabled="categories.length === 0">+</button>
-                <button @click="openCategoryModal()" class="btn btn-ghost btn-xs text-[color:var(--color-accent)] hover:bg-transparent font-medium border border-[color:var(--color-accent)]/20 hover:border-[color:var(--color-accent)] rounded-lg text-[10px]" title="Add Category">+ Category</button>
+                <h2
+                    class="text-xs font-bold uppercase tracking-widest opacity-55"
+                >
+                    Bookmarks
+                </h2>
+                <button
+                    @click="openBookmarkModal()"
+                    class="flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--color-accent)] text-xs font-black text-[color:var(--color-background)] shadow-sm transition-transform hover:scale-110"
+                    title="Add Bookmark"
+                    :disabled="categories.length === 0"
+                >
+                    +
+                </button>
+                <button
+                    @click="openCategoryModal()"
+                    class="border-[color:var(--color-accent)]/20 btn btn-ghost btn-xs rounded-lg border text-[10px] font-medium text-[color:var(--color-accent)] hover:border-[color:var(--color-accent)] hover:bg-transparent"
+                    title="Add Category"
+                >
+                    + Category
+                </button>
             </div>
-            <a href="/settings?tab=bookmarks" class="text-xs opacity-50 hover:opacity-100 hover:text-[color:var(--color-accent)] transition-all">Manage</a>
+            <a
+                href="/settings?tab=bookmarks"
+                class="text-xs opacity-50 transition-all hover:text-[color:var(--color-accent)] hover:opacity-100"
+                >Manage</a
+            >
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <template x-for="cat in filterBookmarks()" :key="cat.id">
-                <div class="p-6 rounded-xl border border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2">
-                    <h3 class="font-bold text-base text-[color:var(--color-accent)] border-b border-[color:var(--color-primary)]/10 pb-2.5 mb-4" x-text="cat.name"></h3>
+                <div
+                    class="border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2 rounded-xl border p-6"
+                >
+                    <h3
+                        class="border-[color:var(--color-primary)]/10 mb-4 border-b pb-2.5 text-base font-bold text-[color:var(--color-accent)]"
+                        x-text="cat.name"
+                    ></h3>
                     <div class="flex flex-col gap-2.5">
-                        <template x-for="bookmark in cat.bookmarks" :key="bookmark.id">
-                            <a :href="bookmark.url" target="_blank" rel="noreferrer" 
-                               class="flex items-center gap-3.5 py-2 px-3 rounded-lg hover:bg-[color:var(--color-primary)]/5 hover:text-[color:var(--color-accent)] transition-colors text-sm opacity-80 hover:opacity-100 group">
-                                <div class="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[color:var(--color-primary)] group-hover:text-[color:var(--color-accent)] transition-colors" 
-                                     x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`">
-                                </div>
-                                <span class="truncate font-medium" x-text="bookmark.name"></span>
+                        <template
+                            x-for="bookmark in cat.bookmarks"
+                            :key="bookmark.id"
+                        >
+                            <a
+                                :href="bookmark.url"
+                                target="_blank"
+                                rel="noreferrer"
+                                class="hover:bg-[color:var(--color-primary)]/5 group flex items-center gap-3.5 rounded-lg px-3 py-2 text-sm opacity-80 transition-colors hover:text-[color:var(--color-accent)] hover:opacity-100"
+                            >
+                                <div
+                                    class="flex h-5 w-5 flex-shrink-0 items-center justify-center text-[color:var(--color-primary)] transition-colors group-hover:text-[color:var(--color-accent)]"
+                                    x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`"
+                                ></div>
+                                <span
+                                    class="truncate font-medium"
+                                    x-text="bookmark.name"
+                                ></span>
                             </a>
                         </template>
                     </div>
@@ -98,327 +189,499 @@
     </section>
 
     <!-- Empty State for Bookmarks -->
-    <div x-show="bookmarksByCategory.length === 0" class="text-center py-12 border border-dashed border-[color:var(--color-primary)]/10 rounded-xl mb-12">
-        <p class="text-sm opacity-50 mb-3">No bookmarks configured yet.</p>
+    <div
+        x-show="bookmarksByCategory.length === 0"
+        class="border-[color:var(--color-primary)]/10 mb-12 rounded-xl border border-dashed py-12 text-center"
+    >
+        <p class="mb-3 text-sm opacity-50">No bookmarks configured yet.</p>
         <div class="flex justify-center gap-2">
-            <button @click="openCategoryModal()" class="btn btn-xs btn-outline border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]">Add Category</button>
-            <button @click="openBookmarkModal()" class="btn btn-xs btn-outline border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]" :disabled="categories.length === 0">Add Bookmark</button>
+            <button
+                @click="openCategoryModal()"
+                class="btn btn-outline btn-xs border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]"
+            >
+                Add Category
+            </button>
+            <button
+                @click="openBookmarkModal()"
+                class="btn btn-outline btn-xs border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]"
+                :disabled="categories.length === 0"
+            >
+                Add Bookmark
+            </button>
         </div>
     </div>
 
     <!-- Floating Action Button for Settings -->
     <div class="fixed bottom-6 right-6 z-50">
-        <a href="/settings" 
-           class="w-12 h-12 rounded-full flex items-center justify-center bg-[color:var(--color-accent)] text-[color:var(--color-background)] hover:scale-105 shadow-xl transition-all hover:rotate-45 duration-300" 
-           title="Go to Settings">
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z" />
+        <a
+            href="/settings"
+            class="flex h-12 w-12 items-center justify-center rounded-full bg-[color:var(--color-accent)] text-[color:var(--color-background)] shadow-xl transition-all duration-300 hover:rotate-45 hover:scale-105"
+            title="Go to Settings"
+        >
+            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                <path
+                    d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"
+                />
             </svg>
         </a>
     </div>
 
     <!-- MODAL: ADD APPLICATION -->
-    <dialog class="modal backdrop-blur-sm" :class="{ 'modal-open': appModalOpen }">
-        <div class="modal-box bg-[color:var(--color-background)] border border-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] max-w-md p-6 rounded-xl shadow-2xl">
-            <h3 class="font-bold text-base text-[color:var(--color-accent)] mb-4">Add New Application Card</h3>
-            
+    <dialog
+        class="modal backdrop-blur-sm"
+        :class="{ 'modal-open': appModalOpen }"
+    >
+        <div
+            class="border-[color:var(--color-primary)]/20 modal-box max-w-md rounded-xl border bg-[color:var(--color-background)] p-6 text-[color:var(--color-primary)] shadow-2xl"
+        >
+            <h3
+                class="mb-4 text-base font-bold text-[color:var(--color-accent)]"
+            >
+                Add New Application Card
+            </h3>
+
             <div class="space-y-4 text-xs">
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Name</label>
-                    <input type="text" x-model="appForm.name" placeholder="e.g. Proxmox" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Name</label
+                    >
+                    <input
+                        type="text"
+                        x-model="appForm.name"
+                        placeholder="e.g. Proxmox"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">URL</label>
-                    <input type="text" x-model="appForm.url" placeholder="https://..." class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >URL</label
+                    >
+                    <input
+                        type="text"
+                        x-model="appForm.url"
+                        placeholder="https://..."
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">SVG Icon Markup (Optional)</label>
-                    <textarea x-model="appForm.icon" rows="3" placeholder="<svg ...>...</svg>" class="textarea textarea-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm font-mono"></textarea>
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >SVG Icon Markup (Optional)</label
+                    >
+                    <textarea
+                        x-model="appForm.icon"
+                        rows="3"
+                        placeholder="<svg ...>...</svg>"
+                        class="border-[color:var(--color-primary)]/20 textarea textarea-bordered w-full bg-transparent font-mono text-sm"
+                    ></textarea>
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Subtext / Domain Description</label>
-                    <input type="text" x-model="appForm.description" placeholder="e.g. 192.168.1.50" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Subtext / Domain Description</label
+                    >
+                    <input
+                        type="text"
+                        x-model="appForm.description"
+                        placeholder="e.g. 192.168.1.50"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Sort Order</label>
-                    <input type="number" x-model.number="appForm.order" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Sort Order</label
+                    >
+                    <input
+                        type="number"
+                        x-model.number="appForm.order"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
             </div>
 
-            <div class="modal-action flex justify-end gap-2 mt-6">
-                <button @click="appModalOpen = false" class="btn btn-sm btn-ghost">Cancel</button>
-                <button @click="saveApp()" class="btn btn-sm btn-accent text-[color:var(--color-background)] font-bold">Save Application</button>
+            <div class="modal-action mt-6 flex justify-end gap-2">
+                <button
+                    @click="appModalOpen = false"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Cancel
+                </button>
+                <button
+                    @click="saveApp()"
+                    class="btn btn-accent btn-sm font-bold text-[color:var(--color-background)]"
+                >
+                    Save Application
+                </button>
             </div>
         </div>
     </dialog>
 
     <!-- MODAL: ADD CATEGORY -->
-    <dialog class="modal backdrop-blur-sm" :class="{ 'modal-open': categoryModalOpen }">
-        <div class="modal-box bg-[color:var(--color-background)] border border-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] max-w-sm p-6 rounded-xl shadow-2xl">
-            <h3 class="font-bold text-base text-[color:var(--color-accent)] mb-4">Add Bookmark Category</h3>
-            
+    <dialog
+        class="modal backdrop-blur-sm"
+        :class="{ 'modal-open': categoryModalOpen }"
+    >
+        <div
+            class="border-[color:var(--color-primary)]/20 modal-box max-w-sm rounded-xl border bg-[color:var(--color-background)] p-6 text-[color:var(--color-primary)] shadow-2xl"
+        >
+            <h3
+                class="mb-4 text-base font-bold text-[color:var(--color-accent)]"
+            >
+                Add Bookmark Category
+            </h3>
+
             <div class="space-y-4 text-xs">
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Name</label>
-                    <input type="text" x-model="categoryForm.name" placeholder="e.g. Tools" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Name</label
+                    >
+                    <input
+                        type="text"
+                        x-model="categoryForm.name"
+                        placeholder="e.g. Tools"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Sort Order</label>
-                    <input type="number" x-model.number="categoryForm.order" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Sort Order</label
+                    >
+                    <input
+                        type="number"
+                        x-model.number="categoryForm.order"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
             </div>
 
-            <div class="modal-action flex justify-end gap-2 mt-6">
-                <button @click="categoryModalOpen = false" class="btn btn-sm btn-ghost">Cancel</button>
-                <button @click="saveCategory()" class="btn btn-sm btn-accent text-[color:var(--color-background)] font-bold">Save Category</button>
+            <div class="modal-action mt-6 flex justify-end gap-2">
+                <button
+                    @click="categoryModalOpen = false"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Cancel
+                </button>
+                <button
+                    @click="saveCategory()"
+                    class="btn btn-accent btn-sm font-bold text-[color:var(--color-background)]"
+                >
+                    Save Category
+                </button>
             </div>
         </div>
     </dialog>
 
     <!-- MODAL: ADD BOOKMARK -->
-    <dialog class="modal backdrop-blur-sm" :class="{ 'modal-open': bookmarkModalOpen }">
-        <div class="modal-box bg-[color:var(--color-background)] border border-[color:var(--color-primary)]/20 text-[color:var(--color-primary)] max-w-md p-6 rounded-xl shadow-2xl">
-            <h3 class="font-bold text-base text-[color:var(--color-accent)] mb-4">Add Bookmark Link</h3>
-            
+    <dialog
+        class="modal backdrop-blur-sm"
+        :class="{ 'modal-open': bookmarkModalOpen }"
+    >
+        <div
+            class="border-[color:var(--color-primary)]/20 modal-box max-w-md rounded-xl border bg-[color:var(--color-background)] p-6 text-[color:var(--color-primary)] shadow-2xl"
+        >
+            <h3
+                class="mb-4 text-base font-bold text-[color:var(--color-accent)]"
+            >
+                Add Bookmark Link
+            </h3>
+
             <div class="space-y-4 text-xs">
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Category</label>
-                    <select x-model="bookmarkForm.category" class="select select-sm select-bordered w-full bg-[color:var(--color-background)] border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Category</label
+                    >
+                    <select
+                        x-model="bookmarkForm.category"
+                        class="border-[color:var(--color-primary)]/20 select select-bordered select-sm w-full bg-[color:var(--color-background)] text-sm"
+                    >
                         <template x-for="cat in categories" :key="cat.id">
-                            <option :value="cat.id" x-text="cat.name" :selected="bookmarkForm.category === cat.id"></option>
+                            <option
+                                :value="cat.id"
+                                x-text="cat.name"
+                                :selected="bookmarkForm.category === cat.id"
+                            ></option>
                         </template>
                     </select>
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Name</label>
-                    <input type="text" x-model="bookmarkForm.name" placeholder="e.g. Github" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Name</label
+                    >
+                    <input
+                        type="text"
+                        x-model="bookmarkForm.name"
+                        placeholder="e.g. Github"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">URL</label>
-                    <input type="text" x-model="bookmarkForm.url" placeholder="https://..." class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >URL</label
+                    >
+                    <input
+                        type="text"
+                        x-model="bookmarkForm.url"
+                        placeholder="https://..."
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">SVG Icon Markup (Optional)</label>
-                    <textarea x-model="bookmarkForm.icon" rows="3" placeholder="<svg ...>...</svg>" class="textarea textarea-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm font-mono"></textarea>
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >SVG Icon Markup (Optional)</label
+                    >
+                    <textarea
+                        x-model="bookmarkForm.icon"
+                        rows="3"
+                        placeholder="<svg ...>...</svg>"
+                        class="border-[color:var(--color-primary)]/20 textarea textarea-bordered w-full bg-transparent font-mono text-sm"
+                    ></textarea>
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase opacity-60 mb-1">Sort Order</label>
-                    <input type="number" x-model.number="bookmarkForm.order" class="input input-sm input-bordered w-full bg-transparent border-[color:var(--color-primary)]/20 text-sm">
+                    <label class="mb-1 block font-semibold uppercase opacity-60"
+                        >Sort Order</label
+                    >
+                    <input
+                        type="number"
+                        x-model.number="bookmarkForm.order"
+                        class="border-[color:var(--color-primary)]/20 input input-sm input-bordered w-full bg-transparent text-sm"
+                    />
                 </div>
             </div>
 
-            <div class="modal-action flex justify-end gap-2 mt-6">
-                <button @click="bookmarkModalOpen = false" class="btn btn-sm btn-ghost">Cancel</button>
-                <button @click="saveBookmark()" class="btn btn-sm btn-accent text-[color:var(--color-background)] font-bold">Save Bookmark</button>
+            <div class="modal-action mt-6 flex justify-end gap-2">
+                <button
+                    @click="bookmarkModalOpen = false"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Cancel
+                </button>
+                <button
+                    @click="saveBookmark()"
+                    class="btn btn-accent btn-sm font-bold text-[color:var(--color-background)]"
+                >
+                    Save Bookmark
+                </button>
             </div>
         </div>
     </dialog>
 
+    <div class="toast toast-end toast-bottom z-[100]">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div :class="`alert ${toastAlertClass(toast.type)} shadow-lg`">
+                <span x-text="toast.message"></span>
+                <button
+                    @click="removeToast(toast.id)"
+                    class="btn btn-ghost btn-xs"
+                >
+                    x
+                </button>
+            </div>
+        </template>
+    </div>
 </div>
 
 <!-- Startpage Alpine.js Logic -->
+<script src="/js/toast-helper.js"></script>
 <script>
-function flameDashboard() {
-    return {
-        searchQuery: '',
-        apps: <%- JSON.stringify(data.applications) %>,
-        categories: <%- JSON.stringify(data.categories) %>,
-        bookmarksByCategory: <%- JSON.stringify(data.bookmarksByCategory) %>,
-        userId: '<%= locals.auth ? locals.auth.id : "" %>',
-        lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
-        lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',
-        unit: '<%= locals.settings ? locals.settings.weather_unit : "celsius" %>',
-        searchEngine: '<%= locals.settings ? locals.settings.search_engine : "https://www.google.com/search?q=" %>',
-        weatherTemp: '',
-        weatherIcon: '',
-        currentTime: '',
-        currentDate: '',
-        greeting: '',
+    function flameDashboard() {
+        return window.withToastHelpers({
+            searchQuery: '',
+            apps: <%- JSON.stringify(data.applications) %>,
+            categories: <%- JSON.stringify(data.categories) %>,
+            bookmarksByCategory: <%- JSON.stringify(data.bookmarksByCategory) %>,
+            userId: '<%= locals.auth ? locals.auth.id : "" %>',
+            lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
+            lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',
+            unit: '<%= locals.settings ? locals.settings.weather_unit : "celsius" %>',
+            searchEngine: '<%= locals.settings ? locals.settings.search_engine : "https://www.google.com/search?q=" %>',
+            weatherTemp: '',
+            weatherIcon: '',
+            currentTime: '',
+            currentDate: '',
+            greeting: '',
 
-        // Modal and form states
-        appModalOpen: false,
-        categoryModalOpen: false,
-        bookmarkModalOpen: false,
-        appForm: { name: '', url: '', icon: '', description: '', order: 0 },
-        categoryForm: { name: '', order: 0 },
-        bookmarkForm: { name: '', url: '', icon: '', category: '', order: 0 },
+            // Modal and form states
+            appModalOpen: false,
+            categoryModalOpen: false,
+            bookmarkModalOpen: false,
+            appForm: { name: '', url: '', icon: '', description: '', order: 0 },
+            categoryForm: { name: '', order: 0 },
+            bookmarkForm: { name: '', url: '', icon: '', category: '', order: 0 },
 
-        pb: null,
+            pb: null,
 
-        init() {
-            this.pb = new PocketBase(window.location.origin);
-            this.pb.authStore.loadFromCookie(document.cookie);
-            
-            this.updateDateTime();
-            // Update time every minute
-            setInterval(() => this.updateDateTime(), 60000);
-            
-            // Initial weather fetch
-            this.fetchWeather();
-            // Refresh weather every 15 minutes
-            setInterval(() => this.fetchWeather(), 15 * 60 * 1000);
-        },
+            init() {
+                this.pb = new PocketBase(window.location.origin);
+                this.pb.authStore.loadFromCookie(document.cookie);
 
-        updateDateTime() {
-            const now = new Date();
-            
-            // Format Date: e.g. "Friday, 26 June 2026"
-            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            
-            this.currentDate = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
-            
-            // Dynamic Greeting
-            const hour = now.getHours();
-            if (hour < 12) {
-                this.greeting = 'Good morning!';
-            } else if (hour < 17) {
-                this.greeting = 'Good afternoon!';
-            } else {
-                this.greeting = 'Good evening!';
-            }
-        },
+                this.updateDateTime();
+                // Update time every minute
+                setInterval(() => this.updateDateTime(), 60000);
 
-        async fetchWeather() {
-            if (!this.lat || !this.lon) return;
-            try {
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.lat}&longitude=${this.lon}&current_weather=true`);
-                const data = await res.json();
-                if (data && data.current_weather) {
-                    const temp = Math.round(data.current_weather.temperature);
-                    const code = data.current_weather.weathercode;
-                    this.weatherTemp = `${temp}°${this.unit === 'fahrenheit' ? 'F' : 'C'}`;
-                    this.weatherIcon = this.getWeatherIcon(code);
-                }
-            } catch (e) {
-                console.error('Weather widget fetch failed:', e);
-            }
-        },
+                // Initial weather fetch
+                this.fetchWeather();
+                // Refresh weather every 15 minutes
+                setInterval(() => this.fetchWeather(), 15 * 60 * 1000);
+            },
 
-        getWeatherIcon(code) {
-            if (code === 0) return '☀️'; // Clear sky
-            if (code >= 1 && code <= 3) return '🌤️'; // Mainly clear, partly cloudy, and overcast
-            if (code === 45 || code === 48) return '🌫️'; // Fog and depositing rime fog
-            if (code >= 51 && code <= 55) return '🌧️'; // Drizzle
-            if (code >= 61 && code <= 65) return '🌧️'; // Rain
-            if (code >= 71 && code <= 75) return '❄️'; // Snow fall
-            if (code === 77) return '❄️'; // Snow grains
-            if (code >= 80 && code <= 82) return '🌧️'; // Rain showers
-            if (code === 85 || code === 86) return '❄️'; // Snow showers
-            if (code === 95) return '⛈️'; // Thunderstorm
-            if (code === 96 || code === 99) return '⛈️'; // Thunderstorm with hail
-            return '☁️'; // Default cloudy
-        },
+            updateDateTime() {
+                const now = new Date();
 
-        handleSearchEnter() {
-            if (this.searchQuery.trim()) {
-                const query = this.searchQuery.trim();
-                const qLower = query.toLowerCase();
-                
-                // If query matches a configured app's name exactly, open it directly
-                const matchedApp = this.apps.find(a => a.name.toLowerCase() === qLower);
-                if (matchedApp) {
-                    window.open(matchedApp.url, '_blank');
+                // Format Date: e.g. "Friday, 26 June 2026"
+                const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                this.currentDate = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+                // Dynamic Greeting
+                const hour = now.getHours();
+                if (hour < 12) {
+                    this.greeting = 'Good morning!';
+                } else if (hour < 17) {
+                    this.greeting = 'Good afternoon!';
                 } else {
-                    // Open search engine with query
-                    window.open(`${this.searchEngine}${encodeURIComponent(query)}`, '_blank');
+                    this.greeting = 'Good evening!';
                 }
-                this.searchQuery = '';
-            }
-        },
+            },
 
-        filterApps() {
-            if (!this.searchQuery) return this.apps;
-            const q = this.searchQuery.toLowerCase();
-            return this.apps.filter(a => 
-                a.name.toLowerCase().includes(q) || 
-                a.url.toLowerCase().includes(q) || 
-                (a.description && a.description.toLowerCase().includes(q))
-            );
-        },
+            async fetchWeather() {
+                if (!this.lat || !this.lon) return;
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.lat}&longitude=${this.lon}&current_weather=true`);
+                    const data = await res.json();
+                    if (data && data.current_weather) {
+                        const temp = Math.round(data.current_weather.temperature);
+                        const code = data.current_weather.weathercode;
+                        this.weatherTemp = `${temp}°${this.unit === 'fahrenheit' ? 'F' : 'C'}`;
+                        this.weatherIcon = this.getWeatherIcon(code);
+                    }
+                } catch (e) {
+                    console.error('Weather widget fetch failed:', e);
+                }
+            },
 
-        filterBookmarks() {
-            if (!this.searchQuery) return this.bookmarksByCategory;
-            const q = this.searchQuery.toLowerCase();
-            
-            return this.bookmarksByCategory.map(cat => {
-                const filtered = cat.bookmarks.filter(b => 
-                    b.name.toLowerCase().includes(q) || 
-                    b.url.toLowerCase().includes(q)
+            getWeatherIcon(code) {
+                if (code === 0) return '☀️'; // Clear sky
+                if (code >= 1 && code <= 3) return '🌤️'; // Mainly clear, partly cloudy, and overcast
+                if (code === 45 || code === 48) return '🌫️'; // Fog and depositing rime fog
+                if (code >= 51 && code <= 55) return '🌧️'; // Drizzle
+                if (code >= 61 && code <= 65) return '🌧️'; // Rain
+                if (code >= 71 && code <= 75) return '❄️'; // Snow fall
+                if (code === 77) return '❄️'; // Snow grains
+                if (code >= 80 && code <= 82) return '🌧️'; // Rain showers
+                if (code === 85 || code === 86) return '❄️'; // Snow showers
+                if (code === 95) return '⛈️'; // Thunderstorm
+                if (code === 96 || code === 99) return '⛈️'; // Thunderstorm with hail
+                return '☁️'; // Default cloudy
+            },
+
+            handleSearchEnter() {
+                if (this.searchQuery.trim()) {
+                    const query = this.searchQuery.trim();
+                    const qLower = query.toLowerCase();
+
+                    // If query matches a configured app's name exactly, open it directly
+                    const matchedApp = this.apps.find(a => a.name.toLowerCase() === qLower);
+                    if (matchedApp) {
+                        window.open(matchedApp.url, '_blank');
+                    } else {
+                        // Open search engine with query
+                        window.open(`${this.searchEngine}${encodeURIComponent(query)}`, '_blank');
+                    }
+                    this.searchQuery = '';
+                }
+            },
+
+            filterApps() {
+                if (!this.searchQuery) return this.apps;
+                const q = this.searchQuery.toLowerCase();
+                return this.apps.filter(a =>
+                    a.name.toLowerCase().includes(q) ||
+                    a.url.toLowerCase().includes(q) ||
+                    (a.description && a.description.toLowerCase().includes(q))
                 );
-                return {
-                    id: cat.id,
-                    name: cat.name,
-                    order: cat.order,
-                    bookmarks: filtered
+            },
+
+            filterBookmarks() {
+                if (!this.searchQuery) return this.bookmarksByCategory;
+                const q = this.searchQuery.toLowerCase();
+
+                return this.bookmarksByCategory.map(cat => {
+                    const filtered = cat.bookmarks.filter(b =>
+                        b.name.toLowerCase().includes(q) ||
+                        b.url.toLowerCase().includes(q)
+                    );
+                    return {
+                        id: cat.id,
+                        name: cat.name,
+                        order: cat.order,
+                        bookmarks: filtered
+                    };
+                }).filter(cat => cat.bookmarks.length > 0);
+            },
+
+            // Modal triggers
+            openAppModal() {
+                this.appForm = { name: '', url: '', icon: '', description: '', order: this.apps.length + 1 };
+                this.appModalOpen = true;
+            },
+
+            async saveApp() {
+                try {
+                    if (!this.appForm.name || !this.appForm.url) {
+                        this.showToast('Name and URL are required.', 'warning');
+                        return;
+                    }
+                    await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
+                    window.location.reload();
+                } catch (e) {
+                    this.showToast('Failed to add application: ' + e.message, 'error');
+                }
+            },
+
+            openCategoryModal() {
+                this.categoryForm = { name: '', order: this.categories.length + 1 };
+                this.categoryModalOpen = true;
+            },
+
+            async saveCategory() {
+                try {
+                    if (!this.categoryForm.name) {
+                        this.showToast('Category name is required.', 'warning');
+                        return;
+                    }
+                    await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                    window.location.reload();
+                } catch (e) {
+                    this.showToast('Failed to add category: ' + e.message, 'error');
+                }
+            },
+
+            openBookmarkModal() {
+                this.bookmarkForm = {
+                    name: '',
+                    url: '',
+                    icon: '',
+                    category: this.categories.length > 0 ? this.categories[0].id : '',
+                    order: 10
                 };
-            }).filter(cat => cat.bookmarks.length > 0);
-        },
+                this.bookmarkModalOpen = true;
+            },
 
-        // Modal triggers
-        openAppModal() {
-            this.appForm = { name: '', url: '', icon: '', description: '', order: this.apps.length + 1 };
-            this.appModalOpen = true;
-        },
-
-        async saveApp() {
-            try {
-                if (!this.appForm.name || !this.appForm.url) {
-                    alert('Name and URL are required.');
-                    return;
+            async saveBookmark() {
+                try {
+                    if (!this.bookmarkForm.name || !this.bookmarkForm.url) {
+                        this.showToast('Name and URL are required.', 'warning');
+                        return;
+                    }
+                    if (!this.bookmarkForm.category) {
+                        this.showToast('Please select or create a category first.', 'warning');
+                        return;
+                    }
+                    await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
+                    window.location.reload();
+                } catch (e) {
+                    this.showToast('Failed to add bookmark link: ' + e.message, 'error');
                 }
-                await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
-                window.location.reload();
-            } catch (e) {
-                alert('Failed to add application: ' + e.message);
             }
-        },
-
-        openCategoryModal() {
-            this.categoryForm = { name: '', order: this.categories.length + 1 };
-            this.categoryModalOpen = true;
-        },
-
-        async saveCategory() {
-            try {
-                if (!this.categoryForm.name) {
-                    alert('Category name is required.');
-                    return;
-                }
-                await this.pb.collection('bookmark_categories').create(this.categoryForm);
-                window.location.reload();
-            } catch (e) {
-                alert('Failed to add category: ' + e.message);
-            }
-        },
-
-        openBookmarkModal() {
-            this.bookmarkForm = { 
-                name: '', 
-                url: '', 
-                icon: '', 
-                category: this.categories.length > 0 ? this.categories[0].id : '', 
-                order: 10 
-            };
-            this.bookmarkModalOpen = true;
-        },
-
-        async saveBookmark() {
-            try {
-                if (!this.bookmarkForm.name || !this.bookmarkForm.url) {
-                    alert('Name and URL are required.');
-                    return;
-                }
-                if (!this.bookmarkForm.category) {
-                    alert('Please select or create a category first.');
-                    return;
-                }
-                await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
-                window.location.reload();
-            } catch (e) {
-                alert('Failed to add bookmark link: ' + e.message);
-            }
-        }
+        });
     }
-}
 </script>

@@ -286,6 +286,12 @@
                     <template x-for="app in sortedApplications()" :key="app.id">
                         <tr
                             class="border-[color:var(--color-primary)]/5 border-b"
+                            :class="dragRowClasses('apps', app.id)"
+                            :draggable="isOrderDragEnabled('apps')"
+                            @dragstart="onRowDragStart('apps', app.id, $event)"
+                            @dragover="onRowDragOver('apps', app.id, $event)"
+                            @drop="onRowDrop('apps', app.id, $event)"
+                            @dragend="onRowDragEnd()"
                         >
                             <td
                                 class="text-xs font-bold"
@@ -387,6 +393,12 @@
                     <template x-for="cat in sortedCategories()" :key="cat.id">
                         <tr
                             class="border-[color:var(--color-primary)]/5 border-b"
+                            :class="dragRowClasses('categories', cat.id)"
+                            :draggable="isOrderDragEnabled('categories')"
+                            @dragstart="onRowDragStart('categories', cat.id, $event)"
+                            @dragover="onRowDragOver('categories', cat.id, $event)"
+                            @drop="onRowDrop('categories', cat.id, $event)"
+                            @dragend="onRowDragEnd()"
                         >
                             <td
                                 class="text-xs font-bold"
@@ -508,6 +520,12 @@
                     <template x-for="b in sortedBookmarks()" :key="b.id">
                         <tr
                             class="border-[color:var(--color-primary)]/5 border-b"
+                            :class="dragRowClasses('bookmarks', b.id)"
+                            :draggable="isOrderDragEnabled('bookmarks')"
+                            @dragstart="onRowDragStart('bookmarks', b.id, $event)"
+                            @dragover="onRowDragOver('bookmarks', b.id, $event)"
+                            @drop="onRowDrop('bookmarks', b.id, $event)"
+                            @dragend="onRowDragEnd()"
                         >
                             <td
                                 class="text-xs font-semibold opacity-80"
@@ -790,11 +808,26 @@
             </div>
         </div>
     </dialog>
+
+    <div class="toast toast-end toast-bottom z-[100]">
+        <template x-for="toast in toasts" :key="toast.id">
+            <div :class="`alert ${toastAlertClass(toast.type)} shadow-lg`">
+                <span x-text="toast.message"></span>
+                <button
+                    @click="removeToast(toast.id)"
+                    class="btn btn-ghost btn-xs"
+                >
+                    x
+                </button>
+            </div>
+        </template>
+    </div>
 </div>
 
+<script src="/js/toast-helper.js"></script>
 <script>
     function settingsManager() {
-        return {
+        return window.withToastHelpers({
             activeTab: 'general',
             settings: <%- JSON.stringify(data.settings) %>,
             applications: <%- JSON.stringify(data.applications) %>,
@@ -815,6 +848,13 @@
                 apps: { key: 'order', dir: 'asc' },
                 categories: { key: 'order', dir: 'asc' },
                 bookmarks: { key: 'order', dir: 'asc' }
+            },
+
+            dragState: {
+                table: '',
+                sourceId: '',
+                overId: '',
+                saving: false
             },
 
             pb: null,
@@ -842,11 +882,13 @@
             async saveSettings() {
                 try {
                     await this.pb.collection('flame_settings').update(this.settings.id, { ...this.settings, user: this.userId });
-                    alert('Settings updated successfully!');
-                    window.location.href = '/';
+                    this.showToast('Settings updated successfully!', 'success', 1000);
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 400);
                 } catch (e) {
                     console.error(e);
-                    alert('Failed to update settings: ' + e.message);
+                    this.showToast('Failed to update settings: ' + e.message, 'error');
                 }
             },
 
@@ -910,6 +952,142 @@
                 });
             },
 
+            isOrderDragEnabled(table) {
+                const state = this.sortState[table];
+                return !!state && state.key === 'order' && !this.dragState.saving;
+            },
+
+            dragRowClasses(table, rowId) {
+                if (!this.isOrderDragEnabled(table)) return '';
+                if (this.dragState.table === table && this.dragState.sourceId === rowId) {
+                    return 'cursor-grabbing opacity-60';
+                }
+                if (this.dragState.table === table && this.dragState.overId === rowId) {
+                    return 'cursor-move bg-[color:var(--color-accent)]/10';
+                }
+                return 'cursor-move';
+            },
+
+            onRowDragStart(table, rowId, event) {
+                if (!this.isOrderDragEnabled(table)) return;
+                this.dragState.table = table;
+                this.dragState.sourceId = rowId;
+                this.dragState.overId = rowId;
+                if (event.dataTransfer) {
+                    event.dataTransfer.effectAllowed = 'move';
+                    event.dataTransfer.setData('text/plain', rowId);
+                }
+            },
+
+            onRowDragOver(table, rowId, event) {
+                if (!this.isOrderDragEnabled(table)) return;
+                if (this.dragState.table !== table) return;
+                event.preventDefault();
+                this.dragState.overId = rowId;
+                if (event.dataTransfer) {
+                    event.dataTransfer.dropEffect = 'move';
+                }
+            },
+
+            async onRowDrop(table, rowId, event) {
+                if (!this.isOrderDragEnabled(table)) return;
+                if (this.dragState.table !== table || !this.dragState.sourceId) return;
+                event.preventDefault();
+                const sourceId = this.dragState.sourceId;
+                this.dragState.overId = rowId;
+                if (sourceId === rowId) {
+                    this.onRowDragEnd();
+                    return;
+                }
+
+                this.applyReorder(table, sourceId, rowId);
+                await this.persistTableOrder(table);
+                this.onRowDragEnd();
+            },
+
+            onRowDragEnd() {
+                this.dragState.table = '';
+                this.dragState.sourceId = '';
+                this.dragState.overId = '';
+            },
+
+            getTableItems(table) {
+                if (table === 'apps') return this.applications;
+                if (table === 'categories') return this.categories;
+                if (table === 'bookmarks') return this.bookmarks;
+                return [];
+            },
+
+            setTableItems(table, items) {
+                if (table === 'apps') this.applications = items;
+                if (table === 'categories') this.categories = items;
+                if (table === 'bookmarks') this.bookmarks = items;
+            },
+
+            getSortedItems(table) {
+                if (table === 'apps') return this.sortedApplications();
+                if (table === 'categories') return this.sortedCategories();
+                if (table === 'bookmarks') return this.sortedBookmarks();
+                return [];
+            },
+
+            applyReorder(table, sourceId, targetId) {
+                const ordered = [...this.getSortedItems(table)];
+                const sourceIndex = ordered.findIndex(item => item.id === sourceId);
+                const targetIndex = ordered.findIndex(item => item.id === targetId);
+                if (sourceIndex === -1 || targetIndex === -1) return;
+
+                const [moved] = ordered.splice(sourceIndex, 1);
+                ordered.splice(targetIndex, 0, moved);
+
+                const direction = this.sortState[table]?.dir || 'asc';
+                const total = ordered.length;
+                ordered.forEach((item, index) => {
+                    item.order = direction === 'desc' ? total - index : index + 1;
+                });
+
+                this.setTableItems(table, ordered);
+            },
+
+            collectionForTable(table) {
+                if (table === 'apps') return 'applications';
+                if (table === 'categories') return 'bookmark_categories';
+                if (table === 'bookmarks') return 'bookmarks';
+                return '';
+            },
+
+            isUserScopedTable(table) {
+                return table === 'apps' || table === 'bookmarks';
+            },
+
+            async persistTableOrder(table) {
+                const collection = this.collectionForTable(table);
+                if (!collection) return;
+
+                this.dragState.saving = true;
+                try {
+                    const items = this.getTableItems(table);
+                    const updates = items.map(item => {
+                        const payload = { order: item.order };
+                        if (this.isUserScopedTable(table) && this.userId) {
+                            payload.user = this.userId;
+                        }
+                        return this.pb.collection(collection).update(item.id, payload);
+                    });
+
+                    const results = await Promise.allSettled(updates);
+                    const failed = results.filter(r => r.status === 'rejected');
+                    if (failed.length > 0) {
+                        const firstError = failed[0].reason?.message || 'Unknown error';
+                        this.showToast(`Saved with issues: ${failed.length} row(s) could not be updated. ${firstError}`, 'warning', 5000);
+                    }
+                } catch (e) {
+                    this.showToast('Failed to save new row order: ' + e.message, 'error');
+                } finally {
+                    this.dragState.saving = false;
+                }
+            },
+
             openAppModal(app = null) {
                 if (app) {
                     this.appForm = { ...app };
@@ -928,7 +1106,7 @@
                     }
                     window.location.reload();
                 } catch (e) {
-                    alert('Failed to save application: ' + e.message);
+                    this.showToast('Failed to save application: ' + e.message, 'error');
                 }
             },
 
@@ -938,7 +1116,7 @@
                         await this.pb.collection('applications').delete(id);
                         window.location.reload();
                     } catch (e) {
-                        alert('Failed to delete application card: ' + e.message);
+                        this.showToast('Failed to delete application card: ' + e.message, 'error');
                     }
                 }
             },
@@ -961,7 +1139,7 @@
                     }
                     window.location.reload();
                 } catch (e) {
-                    alert('Failed to save category: ' + e.message);
+                    this.showToast('Failed to save category: ' + e.message, 'error');
                 }
             },
 
@@ -971,7 +1149,7 @@
                         await this.pb.collection('bookmark_categories').delete(id);
                         window.location.reload();
                     } catch (e) {
-                        alert('Failed to delete category: ' + e.message);
+                        this.showToast('Failed to delete category: ' + e.message, 'error');
                     }
                 }
             },
@@ -995,7 +1173,7 @@
             async saveBookmark() {
                 try {
                     if (!this.bookmarkForm.category) {
-                        alert('Please create a bookmark category first.');
+                        this.showToast('Please create a bookmark category first.', 'warning');
                         return;
                     }
                     if (this.bookmarkForm.id) {
@@ -1005,7 +1183,7 @@
                     }
                     window.location.reload();
                 } catch (e) {
-                    alert('Failed to save bookmark link: ' + e.message);
+                    this.showToast('Failed to save bookmark link: ' + e.message, 'error');
                 }
             },
 
@@ -1015,10 +1193,10 @@
                         await this.pb.collection('bookmarks').delete(id);
                         window.location.reload();
                     } catch (e) {
-                        alert('Failed to delete bookmark link: ' + e.message);
+                        this.showToast('Failed to delete bookmark link: ' + e.message, 'error');
                     }
                 }
             }
-        }
+        });
     }
 </script>
