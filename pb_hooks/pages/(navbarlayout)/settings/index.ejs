@@ -854,8 +854,12 @@
                 table: '',
                 sourceId: '',
                 overId: '',
-                saving: false
+                saving: false,
+                didReorder: false,
+                dropHandled: false
             },
+
+            transparentDragImage: null,
 
             pb: null,
 
@@ -973,16 +977,39 @@
                 this.dragState.table = table;
                 this.dragState.sourceId = rowId;
                 this.dragState.overId = rowId;
+                this.dragState.didReorder = false;
+                this.dragState.dropHandled = false;
                 if (event.dataTransfer) {
                     event.dataTransfer.effectAllowed = 'move';
                     event.dataTransfer.setData('text/plain', rowId);
+                    // Hide the browser ghost preview so only the in-table row movement is visible.
+                    event.dataTransfer.setDragImage(this.getTransparentDragImage(), 0, 0);
                 }
+            },
+
+            getTransparentDragImage() {
+                if (this.transparentDragImage) return this.transparentDragImage;
+                const img = new Image();
+                img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+                this.transparentDragImage = img;
+                return this.transparentDragImage;
             },
 
             onRowDragOver(table, rowId, event) {
                 if (!this.isOrderDragEnabled(table)) return;
                 if (this.dragState.table !== table) return;
                 event.preventDefault();
+                if (this.dragState.overId === rowId) {
+                    if (event.dataTransfer) {
+                        event.dataTransfer.dropEffect = 'move';
+                    }
+                    return;
+                }
+
+                if (this.dragState.sourceId && this.dragState.sourceId !== rowId) {
+                    this.applyReorder(table, this.dragState.sourceId, rowId);
+                    this.dragState.didReorder = true;
+                }
                 this.dragState.overId = rowId;
                 if (event.dataTransfer) {
                     event.dataTransfer.dropEffect = 'move';
@@ -993,22 +1020,26 @@
                 if (!this.isOrderDragEnabled(table)) return;
                 if (this.dragState.table !== table || !this.dragState.sourceId) return;
                 event.preventDefault();
-                const sourceId = this.dragState.sourceId;
+                this.dragState.dropHandled = true;
                 this.dragState.overId = rowId;
-                if (sourceId === rowId) {
-                    this.onRowDragEnd();
-                    return;
+
+                if (this.dragState.didReorder) {
+                    await this.persistTableOrder(table);
                 }
 
-                this.applyReorder(table, sourceId, rowId);
-                await this.persistTableOrder(table);
                 this.onRowDragEnd();
             },
 
-            onRowDragEnd() {
+            async onRowDragEnd() {
+                if (this.dragState.didReorder && !this.dragState.dropHandled && this.dragState.table) {
+                    await this.persistTableOrder(this.dragState.table);
+                }
+
                 this.dragState.table = '';
                 this.dragState.sourceId = '';
                 this.dragState.overId = '';
+                this.dragState.didReorder = false;
+                this.dragState.dropHandled = false;
             },
 
             getTableItems(table) {
@@ -1060,26 +1091,75 @@
                 return table === 'apps' || table === 'bookmarks';
             },
 
+            canReorderItem(table, item) {
+                if (!this.isUserScopedTable(table)) return true;
+                return !!item.user && item.user === this.userId;
+            },
+
+            buildOrderPayload(table, item, order) {
+                if (table === 'apps') {
+                    return {
+                        user: this.userId,
+                        name: item.name,
+                        url: item.url,
+                        icon: item.icon || '',
+                        description: item.description || '',
+                        order
+                    };
+                }
+
+                if (table === 'bookmarks') {
+                    return {
+                        user: this.userId,
+                        name: item.name,
+                        url: item.url,
+                        icon: item.icon || '',
+                        category: item.category,
+                        order
+                    };
+                }
+
+                if (table === 'categories') {
+                    return {
+                        name: item.name,
+                        order
+                    };
+                }
+
+                return { order };
+            },
+
             async persistTableOrder(table) {
                 const collection = this.collectionForTable(table);
                 if (!collection) return;
 
                 this.dragState.saving = true;
                 try {
-                    const items = this.getTableItems(table);
-                    const updates = items.map(item => {
-                        const payload = { order: item.order };
-                        if (this.isUserScopedTable(table) && this.userId) {
-                            payload.user = this.userId;
-                        }
-                        return this.pb.collection(collection).update(item.id, payload);
-                    });
+                    const allItems = this.getTableItems(table);
+                    const updatableItems = allItems.filter(item => this.canReorderItem(table, item));
+                    const skippedCount = allItems.length - updatableItems.length;
 
-                    const results = await Promise.allSettled(updates);
-                    const failed = results.filter(r => r.status === 'rejected');
-                    if (failed.length > 0) {
-                        const firstError = failed[0].reason?.message || 'Unknown error';
-                        this.showToast(`Saved with issues: ${failed.length} row(s) could not be updated. ${firstError}`, 'warning', 5000);
+                    if (updatableItems.length === 0) {
+                        this.showToast('None of these rows can be reordered by the current user.', 'warning');
+                        return;
+                    }
+
+                    const tempBase = Date.now();
+
+                    // First pass: move records to temporary order values to avoid collisions.
+                    for (let i = 0; i < updatableItems.length; i++) {
+                        const item = updatableItems[i];
+                        const tempOrder = tempBase + i;
+                        await this.pb.collection(collection).update(item.id, this.buildOrderPayload(table, item, tempOrder));
+                    }
+
+                    // Second pass: write final intended order values.
+                    for (const item of updatableItems) {
+                        await this.pb.collection(collection).update(item.id, this.buildOrderPayload(table, item, item.order));
+                    }
+
+                    if (skippedCount > 0) {
+                        this.showToast(`Saved reorder for owned rows only. Skipped ${skippedCount} row(s) that are not owned by this user.`, 'warning', 5000);
                     }
                 } catch (e) {
                     this.showToast('Failed to save new row order: ' + e.message, 'error');
