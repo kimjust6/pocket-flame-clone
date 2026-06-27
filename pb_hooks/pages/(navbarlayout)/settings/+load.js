@@ -4,6 +4,13 @@
  */
 module.exports = function (context) {
     try {
+        const user = context.request.auth
+        if (!user) {
+            context.response.redirect('/login')
+            return
+        }
+        const userFilter = "user = {:user}"
+        const filterParams = { user: user.id }
         let settings = {
             id: 'defaultsettings',
             color_primary: "#d9d9d9",
@@ -16,10 +23,25 @@ module.exports = function (context) {
         };
 
         try {
-            const record = $app.findFirstRecord("flame_settings");
+            const records = $app.findRecordsByFilter("flame_settings", userFilter, "", 1, 0, filterParams);
+            let record = records && records.length ? records[0] : null;
+            if (!record) {
+                const collection = $app.findCollectionByNameOrId("flame_settings");
+                record = new Record(collection);
+                record.set("user", user.id);
+                record.set("color_primary", settings.color_primary);
+                record.set("color_accent", settings.color_accent);
+                record.set("color_background", settings.color_background);
+                record.set("weather_lat", settings.weather_lat);
+                record.set("weather_lon", settings.weather_lon);
+                record.set("weather_unit", settings.weather_unit);
+                record.set("search_engine", settings.search_engine);
+                $app.save(record);
+            }
             if (record) {
                 settings = {
                     id: record.id,
+                    user: record.getString("user") || user.id,
                     color_primary: record.getString("color_primary") || settings.color_primary,
                     color_accent: record.getString("color_accent") || settings.color_accent,
                     color_background: record.getString("color_background") || settings.color_background,
@@ -35,9 +57,10 @@ module.exports = function (context) {
 
         let applications = [];
         try {
-            const appRecords = $app.findRecordsByFilter("applications", "1=1", "order, name", 200, 0);
+            const appRecords = $app.findRecordsByFilter("applications", userFilter, "order, name", 200, 0, filterParams);
             applications = appRecords.map(app => ({
                 id: app.id,
+                user: app.getString("user"),
                 name: app.getString("name"),
                 url: app.getString("url"),
                 icon: app.getString("icon"),
@@ -58,9 +81,10 @@ module.exports = function (context) {
 
         let bookmarks = [];
         try {
-            const bRecords = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
+            const bRecords = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
             bookmarks = bRecords.map(b => ({
                 id: b.id,
+                user: b.getString("user"),
                 name: b.getString("name"),
                 url: b.getString("url"),
                 icon: b.getString("icon"),

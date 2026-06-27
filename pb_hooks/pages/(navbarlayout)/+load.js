@@ -5,10 +5,18 @@
  */
 module.exports = function (context) {
     try {
+        const user = context.request.auth
+        if (!user) {
+            context.response.redirect('/login')
+            return
+        }
+        const userFilter = "user = {:user}"
+        const filterParams = { user: user.id }
+
         // Fetch all applications
         let applications = [];
         try {
-            const appRecords = $app.findRecordsByFilter("applications", "1=1", "order, name", 200, 0);
+            const appRecords = $app.findRecordsByFilter("applications", userFilter, "order, name", 200, 0, filterParams);
             applications = appRecords.map(app => ({
                 id: app.id,
                 name: app.getString("name"),
@@ -32,7 +40,7 @@ module.exports = function (context) {
                 order: cat.getInt("order")
             }));
 
-            const bookmarks = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
+            const bookmarks = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
 
             bookmarksByCategory = categories.map(cat => {
                 const catBookmarks = bookmarks.filter(b => b.getString("category") === cat.id);

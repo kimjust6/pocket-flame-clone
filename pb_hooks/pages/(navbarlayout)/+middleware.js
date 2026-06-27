@@ -11,6 +11,11 @@ const BASE_URL = 'https://startpage.jkim.win';
 module.exports = function (context) {
     const { client, user } = common.init(context)
 
+    if (!user) {
+        context.response.redirect('/login')
+        return
+    }
+
     let settings = {
         color_primary: "#d9d9d9",
         color_accent: "#50fbc2",
@@ -22,7 +27,8 @@ module.exports = function (context) {
     };
 
     try {
-        const record = $app.findFirstRecord("flame_settings");
+        const records = $app.findRecordsByFilter("flame_settings", "user = {:user}", "", 1, 0, { user: user.id });
+        const record = records && records.length ? records[0] : null;
         if (record) {
             settings = {
                 color_primary: record.getString("color_primary") || settings.color_primary,

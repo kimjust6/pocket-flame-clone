@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1782516822999,
+    "generatedTime": 1782517514739,
     "data": [
         {
             "type": "folder",
@@ -744,8 +744,8 @@
         {
             "type": "file",
             "name": "pb_hooks/lib/pocketbase-types.ts",
-            "size": 7030,
-            "hash": "d2a80c09a3f3969d4b10ae5379c92fe40085f2e56d313081de84fd5a6b5f835c"
+            "size": 7097,
+            "hash": "7ea13eb553e2f88168921d537ae1f8f7e2d425a82594c74feae9508ff0cc54e9"
         },
         {
             "type": "file",

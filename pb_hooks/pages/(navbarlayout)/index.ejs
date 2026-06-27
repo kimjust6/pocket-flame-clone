@@ -224,6 +224,7 @@ function flameDashboard() {
         apps: <%- JSON.stringify(data.applications) %>,
         categories: <%- JSON.stringify(data.categories) %>,
         bookmarksByCategory: <%- JSON.stringify(data.bookmarksByCategory) %>,
+        userId: '<%= locals.auth ? locals.auth.id : "" %>',
         lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
         lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',
         unit: '<%= locals.settings ? locals.settings.weather_unit : "celsius" %>',
@@ -246,6 +247,7 @@ function flameDashboard() {
 
         init() {
             this.pb = new PocketBase(window.location.origin);
+            this.pb.authStore.loadFromCookie(document.cookie);
             
             this.updateDateTime();
             // Update time every minute
@@ -365,7 +367,7 @@ function flameDashboard() {
                     alert('Name and URL are required.');
                     return;
                 }
-                await this.pb.collection('applications').create(this.appForm);
+                await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
                 window.location.reload();
             } catch (e) {
                 alert('Failed to add application: ' + e.message);
@@ -411,7 +413,7 @@ function flameDashboard() {
                     alert('Please select or create a category first.');
                     return;
                 }
-                await this.pb.collection('bookmarks').create(this.bookmarkForm);
+                await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
                 window.location.reload();
             } catch (e) {
                 alert('Failed to add bookmark link: ' + e.message);
