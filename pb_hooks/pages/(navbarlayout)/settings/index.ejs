@@ -336,6 +336,7 @@ function settingsManager() {
         applications: <%- JSON.stringify(data.applications) %>,
         categories: <%- JSON.stringify(data.categories) %>,
         bookmarks: <%- JSON.stringify(data.bookmarks) %>,
+        userId: '<%= locals.auth ? locals.auth.id : "" %>',
         
         // Modal forms state
         appForm: { id: '', name: '', url: '', icon: '', description: '', order: 0 },
@@ -350,6 +351,7 @@ function settingsManager() {
 
         init() {
             this.pb = new PocketBase(window.location.origin);
+            this.pb.authStore.loadFromCookie(document.cookie);
             
             // Read tab from query parameters if set
             const urlParams = new URLSearchParams(window.location.search);
@@ -361,7 +363,7 @@ function settingsManager() {
 
         async saveSettings() {
             try {
-                await this.pb.collection('flame_settings').update(this.settings.id, this.settings);
+                await this.pb.collection('flame_settings').update(this.settings.id, { ...this.settings, user: this.userId });
                 alert('Settings updated successfully!');
                 window.location.href = '/';
             } catch (e) {
@@ -374,7 +376,7 @@ function settingsManager() {
             if (app) {
                 this.appForm = { ...app };
             } else {
-                this.appForm = { id: '', name: '', url: '', icon: '', description: '', order: this.applications.length + 1 };
+                this.appForm = { id: '', user: this.userId, name: '', url: '', icon: '', description: '', order: this.applications.length + 1 };
             }
             this.appModalOpen = true;
         },
@@ -382,9 +384,9 @@ function settingsManager() {
         async saveApp() {
             try {
                 if (this.appForm.id) {
-                    await this.pb.collection('applications').update(this.appForm.id, this.appForm);
+                    await this.pb.collection('applications').update(this.appForm.id, { ...this.appForm, user: this.userId });
                 } else {
-                    await this.pb.collection('applications').create(this.appForm);
+                    await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
                 }
                 window.location.reload();
             } catch (e) {
@@ -459,9 +461,9 @@ function settingsManager() {
                     return;
                 }
                 if (this.bookmarkForm.id) {
-                    await this.pb.collection('bookmarks').update(this.bookmarkForm.id, this.bookmarkForm);
+                    await this.pb.collection('bookmarks').update(this.bookmarkForm.id, { ...this.bookmarkForm, user: this.userId });
                 } else {
-                    await this.pb.collection('bookmarks').create(this.bookmarkForm);
+                    await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
                 }
                 window.location.reload();
             } catch (e) {

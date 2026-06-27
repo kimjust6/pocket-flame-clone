@@ -1,7 +1,7 @@
 const common = require('../../lib/common.js')
 
 // Configure your site URL here (no trailing slash)
-const BASE_URL = 'https://startpage.jkim.win';
+const BASE_URL = 'https://link.jkim.win';
 
 /**
  * Middleware function to provide site metadata and global data.
@@ -10,6 +10,11 @@ const BASE_URL = 'https://startpage.jkim.win';
  */
 module.exports = function (context) {
     const { client, user } = common.init(context)
+
+    if (!user) {
+        context.response.redirect('/login')
+        return
+    }
 
     let settings = {
         color_primary: "#d9d9d9",
@@ -22,7 +27,8 @@ module.exports = function (context) {
     };
 
     try {
-        const record = $app.findFirstRecord("flame_settings");
+        const records = $app.findRecordsByFilter("flame_settings", "user = {:user}", "", 1, 0, { user: user.id });
+        const record = records && records.length ? records[0] : null;
         if (record) {
             settings = {
                 color_primary: record.getString("color_primary") || settings.color_primary,

@@ -106,6 +106,7 @@ export type ApplicationsRecord = {
 	order?: number
 	updated: IsoAutoDateString
 	url: string
+	user?: RecordIdString
 }
 
 export type BookmarkCategoriesRecord = {
@@ -125,6 +126,7 @@ export type BookmarksRecord = {
 	order?: number
 	updated: IsoAutoDateString
 	url: string
+	user?: RecordIdString
 }
 
 export type FlameSettingsRecord = {
@@ -135,6 +137,7 @@ export type FlameSettingsRecord = {
 	id: string
 	search_engine?: string
 	updated: IsoAutoDateString
+	user?: RecordIdString
 	weather_lat?: string
 	weather_lon?: string
 	weather_unit?: string

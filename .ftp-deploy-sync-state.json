@@ -1,8 +1,24 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1782516822999,
+    "generatedTime": 1782528295992,
     "data": [
+        {
+            "type": "file",
+            "name": "package.json",
+            "size": 1807,
+            "hash": "a2bf3ca3e2f947801303cbc11a7287aa43e249e2580de0a6e39cca5890781caa"
+        },
+        {
+            "type": "file",
+            "name": "bun.lock",
+            "size": 31714,
+            "hash": "a10c365b52123aa2011efa9f2250be89ca08c7c7ead2848d66854f19009fa828"
+        },
+        {
+            "type": "folder",
+            "name": "patches"
+        },
         {
             "type": "folder",
             "name": "pb_public"
@@ -36,6 +52,12 @@
             "name": "pb_public/js/profile-edit.js",
             "size": 643,
             "hash": "1de51440388d2bdc9ef92dca1ab090a3c80c52064b324cc602a6958837443a50"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1782513000_user_scoped_flame_tables.js",
+            "size": 2038,
+            "hash": "f33b5e155e20a99771e9bf9267ab56d35ca38c4c02bcad66c32426cdd1cfab9a"
         },
         {
             "type": "file",
@@ -514,6 +536,12 @@
             "name": "pb_hooks/pages/login"
         },
         {
+            "type": "file",
+            "name": "pb_hooks/pages/index.ejs",
+            "size": 19306,
+            "hash": "9aeea1a6ad6d9d1c9b8298e130556b0d13bee0b18d9cc425eb87a8994a84be98"
+        },
+        {
             "type": "folder",
             "name": "pb_hooks/pages/auth"
         },
@@ -532,6 +560,18 @@
         {
             "type": "folder",
             "name": "pb_hooks/pages/api"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/+load.js",
+            "size": 2823,
+            "hash": "84ecddac9478d2d5f023734846b3e264f423b81ecfc54fc52074e253aa3ae5d3"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/+layout.ejs",
+            "size": 1578,
+            "hash": "50cc453e4ecb11464ef18da1e24491f744e53b07a9062a833751f8c2d5641ada"
         },
         {
             "type": "file",
@@ -680,20 +720,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/index.ejs",
-            "size": 25504,
-            "hash": "b4fc87786d315af111bc7c2d5d5cce53a57e3343561392b702903ed71dfbbf6a"
+            "size": 25680,
+            "hash": "ea815fced78f17e9697761a72d2d04a90573a6a24cc94e517a54e6f06863cbb0"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/+middleware.js",
-            "size": 3457,
-            "hash": "629b6d508e8a40ac1d88999ee167a610ce1dae16de3d6afa7ed5906f4e20c884"
+            "size": 3657,
+            "hash": "841b8cd48fdcccd75675ce61a76c95eab5bbb16b5190a422a3c8965b501b4252"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/+load.js",
-            "size": 2476,
-            "hash": "37b6682a3cf378daa301464b383868a1a4a887a86f7b9e21cecf9e67311a5a62"
+            "size": 2746,
+            "hash": "d16ac3f30786a40c79cbfb39b1e869850c2898fcf4b8dc0b81845672429298a6"
         },
         {
             "type": "file",
@@ -704,14 +744,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/index.ejs",
-            "size": 26982,
-            "hash": "1460f1d1f86ba5c2dddfffc70770887004860039a487af25e049ee05e38ab77f"
+            "size": 27254,
+            "hash": "479636d80326cecae06e7a76b7dd9b259204989611d9e32015bc233d21164915"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/+load.js",
-            "size": 3209,
-            "hash": "a39cf85b35766534b2f7bbe865c5ad364f5bf8b265aee2aaebd2cf657e1a39bf"
+            "size": 4473,
+            "hash": "d063f595fb9ee3cdf2129b488d44bf4291002576454213612340063986c486f6"
         },
         {
             "type": "file",
@@ -744,14 +784,32 @@
         {
             "type": "file",
             "name": "pb_hooks/lib/pocketbase-types.ts",
-            "size": 7030,
-            "hash": "d2a80c09a3f3969d4b10ae5379c92fe40085f2e56d313081de84fd5a6b5f835c"
+            "size": 7166,
+            "hash": "582ac439b8a9e8cd7b0c7398733315c2db6174d9bbe8b5075d4575a7b2417aa1"
         },
         {
             "type": "file",
             "name": "pb_hooks/lib/common.js",
             "size": 2675,
             "hash": "5d5130f671ede6806325dc9f55a7d701c3e07d542c19eaa54251d58504835136"
+        },
+        {
+            "type": "file",
+            "name": "patches/pocketbase-js-sdk-jsvm+0.25.10004.patch",
+            "size": 351,
+            "hash": "81282467ed12d3f2d5af0ea696059d5b672047595b10e063441b881dc37e7ec4"
+        },
+        {
+            "type": "file",
+            "name": "patches/@sentool+fetch-event-source+0.6.0.patch",
+            "size": 294,
+            "hash": "b3a53d527bd6e99ebd454cc66531b368013c3c8b417d3368d7a41cbb5ee8a87a"
+        },
+        {
+            "type": "file",
+            "name": "patches/@samkirkland+ftp-deploy+1.2.4.patch",
+            "size": 1142,
+            "hash": "8e4cdbddb10f92ef46b8c10c70b930797fcf7674e2ce9ff4aab21f0c3a7ab2de"
         }
     ]
 }
