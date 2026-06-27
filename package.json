@@ -7,8 +7,8 @@
     "wsl": "wsl bash -c \"set -a && source .env && set +a && npm run dev\"",
     "start": "pocketbase serve --dir=pb_data --dev",
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch",
-    "push": "npx phio deploy blinks -e pb_data \"pb_data/**/*\" package.json package-lock.json bun.lock patches \"patches/**/*\"",
-    "login": "npx phio login",
+    "push": "phio deploy blinks -e pb_data \"pb_data/**/*\" \"pb_hooks/pages/(navbarlayout)/account\" \"pb_hooks/pages/(navbarlayout)/account/**/*\" package.json package-lock.json bun.lock patches \"patches/**/*\"",
+    "login": "phio login",
     "update": "pocketbase update",
     "typegen": "node scripts/typegen.mjs",
     "postinstall": "patch-package"
