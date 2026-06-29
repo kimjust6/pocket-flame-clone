@@ -1,29 +1,39 @@
 <!doctype html>
 <html lang="en" data-theme="yellowdark" x-data="shell()">
+    <head>
+        <%- include('head') %> <%- include('theme-init') %> <%-
+        include('alpine-setup') %> <%- include('shell-init') %> <%-
+        include('custom-styles') %>
+    </head>
 
-<head>
-    <%- include('head') %> <%- include('theme-init') %> <%- include('alpine-setup') %> <%- include('shell-init') %> <%-
-                        include('custom-styles') %>
-</head>
-
-<body style="--color-primary: <%= locals.settings ? locals.settings.color_primary : '#d9d9d9' %>; --color-accent: <%= locals.settings ? locals.settings.color_accent : '#50fbc2' %>; --color-background: <%= locals.settings ? locals.settings.color_background : '#282525' %>; background-color: var(--color-background); color: var(--color-primary);" class="min-h-screen">
-    <div class="relative min-h-screen flex flex-col">
-        <% if (!locals.data || !locals.data.isHome) { %>
+    <body
+        style="
+            --color-primary: <%= locals.settings ?
+                locals.settings.color_primary: '#d9d9d9' %>;
+            --color-accent: <%= locals.settings ?
+                locals.settings.color_accent: '#50fbc2' %>;
+            --color-background: <%= locals.settings ?
+                locals.settings.color_background: '#282525' %>;
+            background-color: var(--color-background);
+            color: var(--color-primary);
+        "
+        class="min-h-screen"
+    >
+        <div class="relative flex min-h-screen flex-col">
             <div x-on:click.outside="navOpen = false">
                 <%- include('header') %> <%- include('mobile-menu') %>
             </div>
-        <% } %>
 
-        <main class="relative flex-grow transition-all duration-200"
-            :style="{ 'padding-top': (!locals.data || !locals.data.isHome) && headerVisible ? '3.3rem' : '0' }">
-            <%- slot %>
-        </main>
+            <main
+                class="relative flex-grow transition-all duration-200"
+                :style="{ 'padding-top': headerVisible ? '3.3rem' : '0' }"
+            >
+                <%- slot %>
+            </main>
 
-        <% if (!locals.data || (!locals.data.isHome && !locals.data.list)) { %>
-            <%- include('footer') %>
-        <% } %>
-    </div>
-    <%- include('../_private/link-fixer') %>
-</body>
-
+            <% if (!locals.data || (!locals.data.isHome && !locals.data.list)) {
+            %> <%- include('footer') %> <% } %>
+        </div>
+        <%- include('../_private/link-fixer') %>
+    </body>
 </html>
