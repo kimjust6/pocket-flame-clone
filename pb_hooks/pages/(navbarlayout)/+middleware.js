@@ -1,4 +1,4 @@
-const common = require('../../lib/common.js')
+const common = require(__hooks + '/lib/common.js')
 
 // Configure your site URL here (no trailing slash)
 const BASE_URL = 'https://link.jkim.win';
@@ -9,7 +9,7 @@ const BASE_URL = 'https://link.jkim.win';
  * @returns {Object} The metadata and data object.
  */
 module.exports = function (context) {
-    const { client, user } = common.init(context)
+    const user = context.request && context.request.auth ? context.request.auth : null
 
     if (!user) {
         context.response.redirect('/login')

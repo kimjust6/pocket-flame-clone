@@ -28,6 +28,11 @@ const toPlainObject = (value) => {
     return value;
 };
 
+const HOOKS_DIR = typeof __hooks !== "undefined" ? __hooks : ".";
+const jsSdkPlugin = require(HOOKS_DIR + "/lib/pocketpages-plugin-js-sdk.local.pb.js");
+const ejsPlugin = require(HOOKS_DIR + "/lib/pocketpages-plugin-ejs.local.pb.js");
+console.log("[pp-debug] loaded +config.js and plugin bundles");
+
 // Custom Auth Plugin Factory (inline)
 /**
  * Factory for the custom authentication plugin.
@@ -227,10 +232,11 @@ const authPlugin = (config) => {
  * @returns {import('pocketpages').Config} The configuration object.
  */
 module.exports = function (api) {
+    console.log("[pp-debug] executing pages +config module.exports");
     return {
         plugins: [
-            'pocketpages-plugin-js-sdk',
-            'pocketpages-plugin-ejs',
+            jsSdkPlugin,
+            ejsPlugin,
             authPlugin,
         ],
         debug: false,

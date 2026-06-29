@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en" data-theme="yellowdark" x-data="shell()">
     <head>
-        <%- include('head') %> <%- include('theme-init') %> <%-
-        include('alpine-setup') %> <%- include('shell-init') %> <%-
-        include('custom-styles') %>
+        <%- include('head.ejs') %> <%- include('theme-init.ejs') %> <%-
+        include('alpine-setup.ejs') %> <%- include('shell-init.ejs') %> <%-
+        include('custom-styles.ejs') %>
     </head>
     <body
         style="
@@ -20,7 +20,7 @@
     >
         <div class="relative flex min-h-screen flex-col">
             <div x-on:click.outside="navOpen = false">
-                <%- include('header') %> <%- include('mobile-menu') %>
+                <%- include('header.ejs') %> <%- include('mobile-menu.ejs') %>
             </div>
 
             <main
@@ -31,8 +31,8 @@
             </main>
 
             <% if (!locals.data || (!locals.data.isHome && !locals.data.list)) {
-            %> <%- include('footer') %> <% } %>
+            %> <%- include('footer.ejs') %> <% } %>
         </div>
-        <%- include('../_private/link-fixer') %>
+        <%- include('link-fixer.ejs') %>
     </body>
 </html>
