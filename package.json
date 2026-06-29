@@ -7,7 +7,7 @@
     "wsl": "wsl bash -c \"set -a && source .env && set +a && npm run dev\"",
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch",
     "bundle:hooks": "esbuild ./node_modules/pocketpages/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages.bundle.pb.js && esbuild ./node_modules/pocketpages-plugin-ejs/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages-plugin-ejs.bundle.pb.js && esbuild ./node_modules/pocketpages-plugin-js-sdk/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages-plugin-js-sdk.bundle.pb.js",
-    "push": "npm run bundle:hooks && phio deploy blinks",
+    "push": "node scripts/push.mjs",
     "login": "phio login",
     "update": "pocketbase update",
     "typegen": "node scripts/typegen.mjs",
