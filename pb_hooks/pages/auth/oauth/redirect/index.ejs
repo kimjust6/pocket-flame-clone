@@ -1,25 +1,90 @@
-<script server>
-    const { state, code } = params
-    let error = null
-    try {
-        const authData = signInWithOAuth2(state, code)
-        redirect('/')
-    } catch (e) {
-        error = e.message
-        console.error('OAuth Redirect Error:', e)
-    }
-</script>
-
-<% if (error) { %>
-    <div class="hero min-h-screen bg-base-200">
-        <div class="hero-content text-center">
-            <div class="max-w-md">
-                <h1 class="text-3xl font-bold text-error">Authentication Failed</h1>
-                <p class="py-6">
-                    <%= error %>
-                </p>
-                <a href="/login" class="btn btn-primary">Try Again</a>
-            </div>
+<div class="hero min-h-screen bg-base-200">
+    <div class="hero-content text-center">
+        <div class="max-w-md">
+            <h1 class="text-3xl font-bold">Finishing sign in...</h1>
+            <p class="py-6 text-base-content/70" id="oauth-status">
+                Please wait while we complete authentication.
+            </p>
+            <a href="/login" class="btn btn-primary hidden" id="oauth-retry"
+                >Try Again</a
+            >
         </div>
     </div>
-    <% } %>
+</div>
+
+<script>
+    ;(async function completeOAuth() {
+        const statusEl = document.getElementById('oauth-status')
+        const retryEl = document.getElementById('oauth-retry')
+
+        const setError = (message) => {
+            if (statusEl) statusEl.textContent = message
+            if (retryEl) retryEl.classList.remove('hidden')
+        }
+
+        try {
+            const params = new URLSearchParams(window.location.search)
+            const state = params.get('state')
+            const code = params.get('code')
+
+            if (!state || !code) {
+                throw new Error('Missing OAuth response parameters.')
+            }
+
+            const stored = JSON.parse(
+                localStorage.getItem('pp_oauth_state') || 'null'
+            )
+            if (!stored) {
+                throw new Error('Missing stored OAuth state.')
+            }
+            if (stored.state !== state) {
+                throw new Error('OAuth state mismatch. Please try again.')
+            }
+
+            const res = await fetch('/api/collections/users/auth-with-oauth2', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    provider: stored.name,
+                    code,
+                    codeVerifier: stored.codeVerifier,
+                    redirectURL: stored.redirectURL,
+                    createData: { emailVisibility: false },
+                }),
+            })
+
+            let json = null
+            try {
+                json = await res.json()
+            } catch (e) {
+                json = null
+            }
+            if (!res.ok) {
+                throw new Error(
+                    (json && json.message) ||
+                        'OAuth authentication failed. Please try again.'
+                )
+            }
+
+            const token = json && json.token
+            if (!token) {
+                throw new Error('Invalid OAuth response from server.')
+            }
+
+            document.cookie =
+                'pb_auth=' +
+                encodeURIComponent(JSON.stringify({ token })) +
+                '; Path=/; SameSite=Lax; Max-Age=1209600'
+
+            localStorage.removeItem('pp_oauth_state')
+            window.location.replace('/')
+        } catch (err) {
+            setError(
+                err && err.message
+                    ? err.message
+                    : 'Authentication failed. Please try again.'
+            )
+        }
+    })()
+</script>

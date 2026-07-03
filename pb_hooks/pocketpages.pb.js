@@ -8643,6 +8643,21 @@ ${e instanceof Error ? e.stack?.replaceAll(pagesRoot, "/" + $filepath.base(pages
 // src/lib/pages/providers/v23Provider/wrapper.ts
 init_cjs_shims();
 var import_url_parse2 = __toESM(require_url_parse());
+var parseCookieHeader = (cookieHeader) => {
+    const out = {};
+    if (!cookieHeader || typeof cookieHeader !== "string") return out;
+    const parts = cookieHeader.split(";");
+    for (let i = 0; i < parts.length; i++) {
+        const entry = parts[i].trim();
+        if (!entry) continue;
+        const sep = entry.indexOf("=");
+        const key = sep >= 0 ? entry.slice(0, sep).trim() : entry.trim();
+        const val = sep >= 0 ? entry.slice(sep + 1) : "";
+        if (!key) continue;
+        out[key] = val;
+    }
+    return out;
+};
 var v23MiddlewareWrapper = (e) => {
     const next = () => {
         e.next();
@@ -8663,9 +8678,55 @@ var v23MiddlewareWrapper = (e) => {
         auth: e.auth,
         method: method.toLowerCase(),
         url: (0, import_url_parse2.default)(url.string()),
+        event: e,
         formData: () => e.requestInfo().body,
-        body: () => e.requestInfo().body
+        body: () => e.requestInfo().body,
+        cookies: (name) => {
+            let cookieHeader = "";
+            try {
+                cookieHeader = `${e.request.header().get("Cookie") ?? ""}`;
+            } catch (_e) {
+            }
+            try {
+                if (!cookieHeader) {
+                    const headers = e.requestInfo()?.headers;
+                    if (headers) {
+                        if (typeof headers.get === "function") {
+                            cookieHeader = `${headers.get("Cookie") ?? headers.get("cookie") ?? ""}`;
+                        } else {
+                            cookieHeader = `${headers.Cookie ?? headers.cookie ?? ""}`;
+                        }
+                    }
+                }
+            } catch (_e) {
+            }
+            const allCookies = parseCookieHeader(cookieHeader);
+            if (typeof name === "string") return allCookies[name];
+            return allCookies;
+        }
     };
+    if (!request.auth) {
+        try {
+            const cookieVal = request.cookies("pb_auth");
+            if (cookieVal) {
+                let parsed = null;
+                try {
+                    parsed = JSON.parse(cookieVal);
+                } catch (_e) {
+                    parsed = JSON.parse(decodeURIComponent(cookieVal));
+                }
+                if (parsed && parsed.token) {
+                    const authRecord = $app.findAuthRecordByToken(parsed.token);
+                    if (authRecord) {
+                        $apis.enrichRecord(e, authRecord);
+                        request.auth = authRecord;
+                        request.authToken = parsed.token;
+                    }
+                }
+            }
+        } catch (_e) {
+        }
+    }
     const response = {
         file: (path3) => {
             return e.fileFS($os.dirFS($filepath.dir(path3)), $filepath.base(path3));
@@ -8686,7 +8747,13 @@ var v23MiddlewareWrapper = (e) => {
             e.response.header().set(name, value);
         },
         cookie: (name, value, options2) => {
-            response.header("Set-Cookie", `${name}=${value}; Path=/`);
+            let outValue = "";
+            if (typeof value === "object") {
+                outValue = encodeURIComponent(JSON.stringify(value));
+            } else {
+                outValue = encodeURIComponent(`${value ?? ""}`);
+            }
+            response.header("Set-Cookie", `${name}=${outValue}; Path=/`);
         }
     };
     require(`${__hooks}/pocketpages.pb`).MiddlewareHandler(

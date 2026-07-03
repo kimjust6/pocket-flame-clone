@@ -12,7 +12,11 @@ const safeParseJson = (value) => {
     try {
         return JSON.parse(value);
     } catch {
-        return value;
+        try {
+            return JSON.parse(decodeURIComponent(value));
+        } catch {
+            return value;
+        }
     }
 };
 
@@ -39,7 +43,7 @@ const jsSdkPlugin = require(HOOKS_DIR + "/lib/pocketpages-plugin-js-sdk.local.pb
  */
 const authPlugin = (config) => {
     const { globalApi } = config;
-    const { dbg, info } = globalApi;
+    const { dbg } = globalApi;
 
     // Global API methods for user management
     globalApi.createUser = (email, password, options) => {
@@ -224,17 +228,10 @@ const authPlugin = (config) => {
     };
 };
 
-/**
- * PocketPages configuration function.
- * @param {import('pocketpages').ConfigContext} api - The configuration context.
- * @returns {import('pocketpages').Config} The configuration object.
- */
-module.exports = function (api) {
-    return {
-        plugins: [
-            jsSdkPlugin,
-            authPlugin,
-        ],
-        debug: false,
-    }
+module.exports = {
+    plugins: [
+        jsSdkPlugin,
+        authPlugin,
+    ],
+    debug: false,
 }
