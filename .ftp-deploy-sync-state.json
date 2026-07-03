@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1782948414469,
+    "generatedTime": 1783043609148,
     "data": [
         {
             "type": "file",
@@ -54,6 +54,18 @@
             "name": "pb_public/js/profile-edit.js",
             "size": 643,
             "hash": "1de51440388d2bdc9ef92dca1ab090a3c80c52064b324cc602a6958837443a50"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1783040117_updated_users.js",
+            "size": 492,
+            "hash": "27080379319fa18df0e1a350a6d39e667adb28c1a6f8ec411911a5fadded7170"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1783039860_updated_users.js",
+            "size": 492,
+            "hash": "3f66edbbb459e9de38c82b93e71c49c0618a74f8b78ffd74f27cd0d5f71602b4"
         },
         {
             "type": "file",
@@ -508,8 +520,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pocketpages.pb.js",
-            "size": 348917,
-            "hash": "348d191ec8dca9596e98f55956ab5cbdfcb0f6b50c5804a660a608995f0f3654"
+            "size": 351426,
+            "hash": "4c323f39353975428cbf58e4983bbb17449566d68f8f8837bb00dde792755625"
         },
         {
             "type": "folder",
@@ -552,8 +564,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 140103,
-            "hash": "e7e3438385e65f7e7aff173135d76e97e058502c1217d500428ef15dbb00eca3"
+            "size": 139990,
+            "hash": "6a58cd390eccc917a9236344ad64306ba1764588e5cebce1838cdd09b780ee07"
         },
         {
             "type": "folder",
@@ -578,8 +590,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+config.js",
-            "size": 8874,
-            "hash": "8a9a6cde6d58f01eac6cbd0f45de1d73789d6b4c9e5656512815561bc11b6aee"
+            "size": 8721,
+            "hash": "5314ba7bb92b8664dba5d0bc6daf72505bd61e94204ae572588d1f8f1bf8180e"
         },
         {
             "type": "folder",
@@ -588,8 +600,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/register/index.ejs",
-            "size": 7551,
-            "hash": "a6310e368e620c30491a8e3925b635edf6664d7333c6b69f1e470109460c9510"
+            "size": 5819,
+            "hash": "edd9ad472022d0a38db242f17558228682fc7aa7df62c234cfbcfec323e13a07"
         },
         {
             "type": "file",
@@ -606,8 +618,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/login/index.ejs",
-            "size": 7535,
-            "hash": "ddf697aa2d44959572a931f57f0fb05630324192b7c63b24fd40228b4abf98e9"
+            "size": 5802,
+            "hash": "6596c3178b2baabc69823151ce732e265f863d64fa5d0cf5a30e45b90c4cb821"
         },
         {
             "type": "file",
@@ -636,14 +648,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/auth/oauth/redirect/index.ejs",
-            "size": 718,
-            "hash": "e130f7b544b092331f45faf2526c2d44cc9d1d42b3e0c36db3061f328c394bbb"
+            "size": 3037,
+            "hash": "bce02a804ab93529b604b1a5573e4c795f1c75ed56f27256cb1e05ad15022c50"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/auth/logout/index.ejs",
-            "size": 57,
-            "hash": "67a9364ab79bc59ee071cef8033814eacb11ba949570d6e2e4f0b5d3ef757e65"
+            "size": 79,
+            "hash": "27d9f4d72dd9cf4ee8260ea5557ef40e52881f51cc821f124490e0f5d26999d0"
         },
         {
             "type": "file",
@@ -668,6 +680,12 @@
             "name": "pb_hooks/pages/_private/shell-data.js",
             "size": 1401,
             "hash": "46dac7e1035a02e1f7424544e1bf34487aa94ae9e8cd5999a710ffbadb44d3e6"
+        },
+        {
+            "type": "file",
+            "name": "pb_hooks/pages/_private/oauth-google-start.ejs",
+            "size": 3310,
+            "hash": "08cea5ebca4bf91453596821bc6f32f31c97d74029bec6a0a95ac4aaa2ebd34f"
         },
         {
             "type": "file",

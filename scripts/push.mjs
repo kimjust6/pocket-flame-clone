@@ -1,5 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
 import { spawnSync } from "node:child_process";
 
 function toWslPath(winPath) {
@@ -14,18 +12,10 @@ function toWslPath(winPath) {
 }
 
 function shellQuoteSingle(value) {
-    return `'${value.replace(/'/g, `'"'"'`)}'`;
+    return `'${value.replace(/'/g, `"'"'`)}'`;
 }
 
 const workspaceRoot = process.cwd();
-const keepDir = path.join(workspaceRoot, "pb_hooks", "lib", "vendor", "pocketbase-ejs", "lib");
-const keepFile = path.join(keepDir, ".keep");
-
-fs.mkdirSync(keepDir, { recursive: true });
-if (!fs.existsSync(keepFile)) {
-    fs.writeFileSync(keepFile, "", "utf8");
-}
-
 const wslCwd = toWslPath(workspaceRoot);
 const deployCmd = `cd ${shellQuoteSingle(wslCwd)} && npx -y -p node@24 -p phio phio deploy blinks 2>&1`;
 

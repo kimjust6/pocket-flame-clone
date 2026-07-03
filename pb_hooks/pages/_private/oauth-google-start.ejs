@@ -59,7 +59,13 @@
                 throw new Error('Google provider is not configured.')
             }
 
-            const redirectURL = window.location.origin + '/auth/oauth/redirect'
+            const isProdHost =
+                window.location.hostname === 'link.jkim.win' ||
+                window.location.hostname === 'www.link.jkim.win'
+            const canonicalOrigin = isProdHost
+                ? 'https://link.jkim.win'
+                : window.location.origin
+            const redirectURL = canonicalOrigin + '/auth/oauth/redirect'
             const authUrl = provider.authURL + encodeURIComponent(redirectURL)
 
             localStorage.setItem(
