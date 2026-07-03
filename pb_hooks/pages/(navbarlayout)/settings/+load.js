@@ -67,7 +67,7 @@ module.exports = function (context) {
                 description: app.getString("description"),
                 order: app.getInt("order")
             }));
-        } catch (e) {}
+        } catch (e) { }
 
         let categories = [];
         try {
@@ -77,11 +77,14 @@ module.exports = function (context) {
                 name: cat.getString("name"),
                 order: cat.getInt("order")
             }));
-        } catch (e) {}
+        } catch (e) { }
 
         let bookmarks = [];
         try {
-            const bRecords = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
+            let bRecords = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
+            if (!bRecords || bRecords.length === 0) {
+                bRecords = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
+            }
             bookmarks = bRecords.map(b => ({
                 id: b.id,
                 user: b.getString("user"),
@@ -91,7 +94,7 @@ module.exports = function (context) {
                 category: b.getString("category"),
                 order: b.getInt("order")
             }));
-        } catch (e) {}
+        } catch (e) { }
 
         return {
             isHome: false,

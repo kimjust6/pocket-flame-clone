@@ -12,7 +12,11 @@ const safeParseJson = (value) => {
     try {
         return JSON.parse(value);
     } catch {
-        return value;
+        try {
+            return JSON.parse(decodeURIComponent(value));
+        } catch {
+            return value;
+        }
     }
 };
 
@@ -28,6 +32,9 @@ const toPlainObject = (value) => {
     return value;
 };
 
+const HOOKS_DIR = typeof __hooks !== "undefined" ? __hooks : ".";
+const jsSdkPlugin = require(HOOKS_DIR + "/lib/pocketpages-plugin-js-sdk.local.pb.js");
+
 // Custom Auth Plugin Factory (inline)
 /**
  * Factory for the custom authentication plugin.
@@ -36,7 +43,7 @@ const toPlainObject = (value) => {
  */
 const authPlugin = (config) => {
     const { globalApi } = config;
-    const { dbg, info } = globalApi;
+    const { dbg } = globalApi;
 
     // Global API methods for user management
     globalApi.createUser = (email, password, options) => {
@@ -221,18 +228,10 @@ const authPlugin = (config) => {
     };
 };
 
-/**
- * PocketPages configuration function.
- * @param {import('pocketpages').ConfigContext} api - The configuration context.
- * @returns {import('pocketpages').Config} The configuration object.
- */
-module.exports = function (api) {
-    return {
-        plugins: [
-            'pocketpages-plugin-js-sdk',
-            'pocketpages-plugin-ejs',
-            authPlugin,
-        ],
-        debug: false,
-    }
+module.exports = {
+    plugins: [
+        jsSdkPlugin,
+        authPlugin,
+    ],
+    debug: false,
 }
