@@ -17,13 +17,13 @@
 
 <% if (data.metadata) { %>
     <% data.metadata.forEach(function(tag) { %>
-        <% if (tag.name.startsWith('og:') || tag.name.startsWith('twitter:')) { %>
+        <% if (tag.name.startsWith('og:')) { %>
             <meta property="<%= tag.name %>" content="<%= tag.content %>" />
-            <% } else { %>
-                <meta name="<%= tag.name %>" content="<%= tag.content %>" />
-                <% } %>
-                    <% }); %>
-                        <% } %>
+        <% } else { %>
+            <meta name="<%= tag.name %>" content="<%= tag.content %>" />
+        <% } %>
+    <% }); %>
+<% } %>
 
                             <title>
                                 <%= data.metadata?.find(x=> x.name === 'title')?.content || 'Flame Startpage' %>

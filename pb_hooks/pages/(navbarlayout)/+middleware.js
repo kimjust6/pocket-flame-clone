@@ -61,6 +61,7 @@ module.exports = function (context) {
                 content: "Your self-hosted startpage and bookmarks manager.",
             },
             { name: 'url', content: BASE_URL },
+            { name: 'theme-color', content: settings.color_background || '#282525' },
 
             // Open Graph metadata
             {
@@ -73,6 +74,11 @@ module.exports = function (context) {
                 name: 'og:image',
                 content: `${BASE_URL}/og-image.webp`,
             },
+            {
+                name: 'og:image:secure_url',
+                content: `${BASE_URL}/og-image.webp`,
+            },
+            { name: 'og:image:type', content: 'image/webp' },
             { name: 'og:image:alt', content: 'Flame Startpage' },
             { name: 'og:image:width', content: '637' },
             { name: 'og:image:height', content: '425' },
@@ -83,9 +89,10 @@ module.exports = function (context) {
             { name: 'og:site_name', content: 'Flame Startpage' },
             { name: 'og:locale', content: 'en_US' },
 
-            // Twitter Card metadata (optional, but helpful)
+            // Twitter Card metadata
             { name: 'twitter:card', content: 'summary_large_image' },
             { name: 'twitter:site', content: '@MatchaLatteTea' },
+            { name: 'twitter:creator', content: '@MatchaLatteTea' },
             {
                 name: 'twitter:title',
                 content: 'Flame Startpage',
@@ -98,6 +105,7 @@ module.exports = function (context) {
                 name: 'twitter:image',
                 content: `${BASE_URL}/og-image.webp`,
             },
+            { name: 'twitter:image:alt', content: 'Flame Startpage' },
         ],
     }
 }
