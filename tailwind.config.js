@@ -34,6 +34,28 @@ export default {
                     "error": "#dd2e2eff",             // Red (Darker)
                     "error-content": "#1C1917",
                 },
+                flamelight: {
+                    "primary": "#D97706",          // Rich warm amber/gold
+                    "primary-content": "#FFFFFF",   // White text on primary
+                    "secondary": "#EA580C",        // Warm orange
+                    "secondary-content": "#FFFFFF",
+                    "accent": "#B45309",           // Deep amber accent
+                    "accent-content": "#FFFFFF",
+                    "neutral": "#1E293B",          // Slate 800 neutral
+                    "neutral-content": "#F8FAFC",   // Light text on neutral
+                    "base-100": "#F8FAFC",         // Clean Slate 50 background
+                    "base-200": "#FFFFFF",         // Crisp white card background
+                    "base-300": "#E2E8F0",         // Slate 200 border/divider
+                    "base-content": "#0F172A",     // Deep Slate 900 high contrast text
+                    "info": "#0284C7",
+                    "info-content": "#FFFFFF",
+                    "success": "#16A34A",
+                    "success-content": "#FFFFFF",
+                    "warning": "#D97706",
+                    "warning-content": "#FFFFFF",
+                    "error": "#DC2626",
+                    "error-content": "#FFFFFF",
+                },
             },
             'light', 'dark', 'cupcake', 'bumblebee', 'emerald', 'corporate', 'synthwave', 'retro', 'cyberpunk', 'valentine', 'halloween', 'garden', 'forest', 'aqua', 'lofi', 'pastel', 'fantasy', 'wireframe', 'black', 'luxury', 'dracula', 'cmyk', 'autumn', 'business', 'acid', 'lemonade', 'night', 'coffee', 'winter', 'dim', 'nord', 'sunset'
         ],

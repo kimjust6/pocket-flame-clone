@@ -54,7 +54,7 @@ module.exports = function (context) {
             // Basic metadata
             {
                 name: 'title',
-                content: 'Flame Startpage',
+                content: 'Flame Homepage',
             },
             {
                 name: 'description',
@@ -66,7 +66,7 @@ module.exports = function (context) {
             // Open Graph metadata
             {
                 name: 'og:title',
-                content: 'Flame Startpage',
+                content: 'Flame Homepage',
             },
             { name: 'og:type', content: 'website' },
             { name: 'og:url', content: BASE_URL },
@@ -79,14 +79,14 @@ module.exports = function (context) {
                 content: `${BASE_URL}/og-image.webp`,
             },
             { name: 'og:image:type', content: 'image/webp' },
-            { name: 'og:image:alt', content: 'Flame Startpage' },
+            { name: 'og:image:alt', content: 'Flame Homepage' },
             { name: 'og:image:width', content: '637' },
             { name: 'og:image:height', content: '425' },
             {
                 name: 'og:description',
                 content: "Your self-hosted startpage and bookmarks manager.",
             },
-            { name: 'og:site_name', content: 'Flame Startpage' },
+            { name: 'og:site_name', content: 'Flame Homepage' },
             { name: 'og:locale', content: 'en_US' },
 
             // Twitter Card metadata
@@ -95,17 +95,17 @@ module.exports = function (context) {
             { name: 'twitter:creator', content: '@MatchaLatteTea' },
             {
                 name: 'twitter:title',
-                content: 'Flame Startpage',
+                content: 'Flame Homepage',
             },
             {
                 name: 'twitter:description',
-                content: "Your self-hosted startpage and bookmarks manager.",
+                content: "Your self-hosted homepage and bookmarks manager.",
             },
             {
                 name: 'twitter:image',
                 content: `${BASE_URL}/og-image.webp`,
             },
-            { name: 'twitter:image:alt', content: 'Flame Startpage' },
+            { name: 'twitter:image:alt', content: 'Flame Homepage' },
         ],
     }
 }
