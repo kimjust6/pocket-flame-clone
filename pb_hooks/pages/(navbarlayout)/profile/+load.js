@@ -5,18 +5,19 @@
  * @returns {{ profile: import('../../../lib/pocketbase-types').UsersResponse }}
  */
 module.exports = function (context) {
-    const common = require('../../../lib/common.js')
+    const common = require(__hooks + '/lib/common.js')
     const { TABLES } = common
-    const { client, user } = common.init(context)
+    const user = context.request ? context.request.auth : null
 
     if (!user) {
-        return context.redirect('/login')
+        context.response.redirect('/login')
+        return
     }
 
     // Fetch fresh user data
     let profile = user
     try {
-        profile = client.collection('users').getOne(user.id)
+        profile = $app.findRecordById(TABLES.USERS, user.id)
     } catch (e) {
         console.error("Failed to fetch fresh profile:", e)
     }
