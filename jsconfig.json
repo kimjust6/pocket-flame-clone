@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "checkJs": false,
+    "skipLibCheck": true
+  },
+  "exclude": ["node_modules", "pb_data"]
+}

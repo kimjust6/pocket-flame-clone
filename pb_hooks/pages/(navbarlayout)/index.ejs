@@ -479,14 +479,22 @@
 </div>
 
 <!-- Startpage Alpine.js Logic -->
+<script type="application/json" id="flame-dashboard-data">
+<%- JSON.stringify({
+    apps: data.applications || [],
+    categories: data.categories || [],
+    bookmarksByCategory: data.bookmarksByCategory || {}
+}) %>
+</script>
 <script src="/js/toast-helper.js"></script>
 <script>
     function flameDashboard() {
+        const initialData = JSON.parse(document.getElementById('flame-dashboard-data')?.textContent || '{}');
         return window.withToastHelpers({
             searchQuery: '',
-            apps: <%- JSON.stringify(data.applications) %>,
-            categories: <%- JSON.stringify(data.categories) %>,
-            bookmarksByCategory: <%- JSON.stringify(data.bookmarksByCategory) %>,
+            apps: initialData.apps || [],
+            categories: initialData.categories || [],
+            bookmarksByCategory: initialData.bookmarksByCategory || {},
             userId: '<%= locals.auth ? locals.auth.id : "" %>',
             lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
             lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',

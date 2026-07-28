@@ -216,13 +216,21 @@
 </div>
 
 <!-- Startpage Alpine.js Logic -->
+<script type="application/json" id="home-dashboard-data">
+<%- JSON.stringify({
+    apps: data.applications || [],
+    categories: data.categories || [],
+    bookmarksByCategory: data.bookmarksByCategory || {}
+}) %>
+</script>
 <script>
 function flameDashboard() {
+    const initialData = JSON.parse(document.getElementById('home-dashboard-data')?.textContent || '{}');
     return {
         searchQuery: '',
-        apps: <%- JSON.stringify(data.applications) %>,
-        categories: <%- JSON.stringify(data.categories) %>,
-        bookmarksByCategory: <%- JSON.stringify(data.bookmarksByCategory) %>,
+        apps: initialData.apps || [],
+        categories: initialData.categories || [],
+        bookmarksByCategory: initialData.bookmarksByCategory || {},
         userId: '<%= locals.auth ? locals.auth.id : "" %>',
         lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
         lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',
@@ -257,3 +265,162 @@ function flameDashboard() {
             // Refresh weather every 15 minutes
             setInterval(() => this.fetchWeather(), 15 * 60 * 1000);
         },
+
+        updateDateTime() {
+            const now = new Date();
+
+            const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+            this.currentDate = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+            const hour = now.getHours();
+            if (hour < 12) {
+                this.greeting = 'Good morning!';
+            } else if (hour < 17) {
+                this.greeting = 'Good afternoon!';
+            } else {
+                this.greeting = 'Good evening!';
+            }
+        },
+
+        async fetchWeather() {
+            if (!this.lat || !this.lon) return;
+            try {
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.lat}&longitude=${this.lon}&current_weather=true`);
+                const data = await res.json();
+                if (data && data.current_weather) {
+                    const temp = Math.round(data.current_weather.temperature);
+                    const code = data.current_weather.weathercode;
+                    this.weatherTemp = `${temp}°${this.unit === 'fahrenheit' ? 'F' : 'C'}`;
+                    this.weatherIcon = this.getWeatherIcon(code);
+                }
+            } catch (e) {
+                console.error('Weather widget fetch failed:', e);
+            }
+        },
+
+        getWeatherIcon(code) {
+            if (code === 0) return '☀️';
+            if (code >= 1 && code <= 3) return '🌤️';
+            if (code === 45 || code === 48) return '🌫️';
+            if (code >= 51 && code <= 55) return '🌧️';
+            if (code >= 61 && code <= 65) return '🌧️';
+            if (code >= 71 && code <= 75) return '❄️';
+            if (code === 77) return '❄️';
+            if (code >= 80 && code <= 82) return '🌧️';
+            if (code === 85 || code === 86) return '❄️';
+            if (code === 95) return '⛈️';
+            if (code === 96 || code === 99) return '⛈️';
+            return '☁️';
+        },
+
+        handleSearchEnter() {
+            if (this.searchQuery.trim()) {
+                const query = this.searchQuery.trim();
+                const qLower = query.toLowerCase();
+
+                const matchedApp = this.apps.find(a => a.name.toLowerCase() === qLower);
+                if (matchedApp) {
+                    window.open(matchedApp.url, '_blank');
+                } else {
+                    window.open(`${this.searchEngine}${encodeURIComponent(query)}`, '_blank');
+                }
+                this.searchQuery = '';
+            }
+        },
+
+        filterApps() {
+            if (!this.searchQuery) return this.apps;
+            const q = this.searchQuery.toLowerCase();
+            return this.apps.filter(a =>
+                a.name.toLowerCase().includes(q) ||
+                a.url.toLowerCase().includes(q) ||
+                (a.description && a.description.toLowerCase().includes(q))
+            );
+        },
+
+        filterBookmarks() {
+            if (!this.searchQuery) return this.bookmarksByCategory;
+            const q = this.searchQuery.toLowerCase();
+
+            return this.bookmarksByCategory.map(cat => {
+                const filtered = cat.bookmarks.filter(b =>
+                    b.name.toLowerCase().includes(q) ||
+                    b.url.toLowerCase().includes(q)
+                );
+                return {
+                    id: cat.id,
+                    name: cat.name,
+                    order: cat.order,
+                    bookmarks: filtered
+                };
+            }).filter(cat => cat.bookmarks.length > 0);
+        },
+
+        openAppModal() {
+            this.appForm = { name: '', url: '', icon: '', description: '', order: this.apps.length + 1 };
+            this.appModalOpen = true;
+        },
+
+        async saveApp() {
+            try {
+                if (!this.appForm.name || !this.appForm.url) {
+                    alert('Name and URL are required.');
+                    return;
+                }
+                await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
+                window.location.reload();
+            } catch (e) {
+                alert('Failed to add application: ' + e.message);
+            }
+        },
+
+        openCategoryModal() {
+            this.categoryForm = { name: '', order: this.categories.length + 1 };
+            this.categoryModalOpen = true;
+        },
+
+        async saveCategory() {
+            try {
+                if (!this.categoryForm.name) {
+                    alert('Category name is required.');
+                    return;
+                }
+                await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                window.location.reload();
+            } catch (e) {
+                alert('Failed to add category: ' + e.message);
+            }
+        },
+
+        openBookmarkModal() {
+            this.bookmarkForm = {
+                name: '',
+                url: '',
+                icon: '',
+                category: this.categories.length > 0 ? this.categories[0].id : '',
+                order: 10
+            };
+            this.bookmarkModalOpen = true;
+        },
+
+        async saveBookmark() {
+            try {
+                if (!this.bookmarkForm.name || !this.bookmarkForm.url) {
+                    alert('Name and URL are required.');
+                    return;
+                }
+                if (!this.bookmarkForm.category) {
+                    alert('Please select or create a category first.');
+                    return;
+                }
+                await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
+                window.location.reload();
+            } catch (e) {
+                alert('Failed to add bookmark link: ' + e.message);
+            }
+        }
+    };
+}
+</script>

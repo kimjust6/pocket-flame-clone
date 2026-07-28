@@ -824,15 +824,24 @@
     </div>
 </div>
 
+<script type="application/json" id="settings-dashboard-data">
+<%- JSON.stringify({
+    settings: data.settings || {},
+    applications: data.applications || [],
+    categories: data.categories || [],
+    bookmarks: data.bookmarks || []
+}) %>
+</script>
 <script src="/js/toast-helper.js"></script>
 <script>
     function settingsManager() {
+        const initialData = JSON.parse(document.getElementById('settings-dashboard-data')?.textContent || '{}');
         return window.withToastHelpers({
             activeTab: 'general',
-            settings: <%- JSON.stringify(data.settings) %>,
-            applications: <%- JSON.stringify(data.applications) %>,
-            categories: <%- JSON.stringify(data.categories) %>,
-            bookmarks: <%- JSON.stringify(data.bookmarks) %>,
+            settings: initialData.settings || {},
+            applications: initialData.applications || [],
+            categories: initialData.categories || [],
+            bookmarks: initialData.bookmarks || [],
             userId: '<%= locals.auth ? locals.auth.id : "" %>',
 
             // Modal forms state
