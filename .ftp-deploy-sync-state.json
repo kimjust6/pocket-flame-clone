@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1785264607187,
+    "generatedTime": 1785265023626,
     "data": [
         {
             "type": "file",
@@ -548,8 +548,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 19305,
-            "hash": "bcc9b8dcda00747c452be8099de9b6e3e84edbc2399eac50af9895f8a11f073a"
+            "size": 25847,
+            "hash": "5a936a8740f8cd7f93b91d9c0036f447f9055199573a922523c9349bea0ea8ce"
         },
         {
             "type": "folder",
@@ -564,8 +564,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 140829,
-            "hash": "4eaafde260f6c37765078d9084bcf4c20f81186ddee2b5369b62365258aee750"
+            "size": 143722,
+            "hash": "c060226748c3e589efa4e5e756595aee94e4ff3d36cf3cee057ff355f8accea8"
         },
         {
             "type": "folder",
@@ -584,8 +584,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+layout.ejs",
-            "size": 1744,
-            "hash": "c25c9033d2961292a2d862c84fda60d8735c0d9a43f292bdac82c79b756d3676"
+            "size": 1855,
+            "hash": "0b30f5260a18e878c65030e67f29cedaabb8031955a89d54494384f69a7b47c8"
         },
         {
             "type": "file",
@@ -740,8 +740,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/index.ejs",
-            "size": 32396,
-            "hash": "a73679c63569b3b8aa2d746d069401eca17288b21ba07d8824848a8752409877"
+            "size": 32702,
+            "hash": "604f570b160af793bcd4b688827bbf600402e3ccbb284e4d38034bf3b8593c9d"
         },
         {
             "type": "file",
@@ -764,8 +764,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/index.ejs",
-            "size": 56530,
-            "hash": "60606c1d3e5c709324bb2f054dbb19e7e46d41291dfa16ef2da53f2e1b13f1f3"
+            "size": 56864,
+            "hash": "23cc4e68c933873e3524d8f399070a87eb2d9a4169db17704b56be33ee25d41d"
         },
         {
             "type": "file",
