@@ -16,7 +16,7 @@
         ].filter(Boolean).join('');
     %>
     <body
-        style="<%= customStyles %>"
+        <% if (customStyles) { %>style="<%= customStyles %>"<% } %>
         class="min-h-screen"
     >
         <div class="relative flex min-h-screen flex-col">

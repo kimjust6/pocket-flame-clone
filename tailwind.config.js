@@ -35,11 +35,11 @@ export default {
                     "error-content": "#1C1917",
                 },
                 flamelight: {
-                    "primary": "#D97706",          // Rich warm amber/gold
-                    "primary-content": "#FFFFFF",   // White text on primary
-                    "secondary": "#EA580C",        // Warm orange
-                    "secondary-content": "#FFFFFF",
-                    "accent": "#B45309",           // Deep amber accent
+                    "primary": "#EAB308",          // Vibrant orangey-yellow
+                    "primary-content": "#1C1917",   // Dark text on primary
+                    "secondary": "#F59E0B",        // Warm amber / yellowish orange
+                    "secondary-content": "#1C1917", // Dark text on secondary
+                    "accent": "#CA8A04",           // Deep orangey-yellow accent
                     "accent-content": "#FFFFFF",
                     "neutral": "#1E293B",          // Slate 800 neutral
                     "neutral-content": "#F8FAFC",   // Light text on neutral
