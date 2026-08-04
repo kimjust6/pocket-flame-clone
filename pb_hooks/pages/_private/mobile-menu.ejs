@@ -1,3 +1,11 @@
+<!-- Mobile Menu Backdrop -->
+<div
+    x-show="navOpen"
+    x-cloak
+    @click="navOpen = false"
+    style="position: fixed; inset: 0; top: 4.05rem; z-index: 40; display: none;"
+></div>
+
 <!-- Mobile Menu Dropdown -->
 <div class="fixed inset-x-0 top-[4.05rem] w-full border-b border-base-300 bg-base-100 shadow-lg md:hidden"
     x-show="navOpen" x-transition x-cloak style="z-index: 60; display: none">
