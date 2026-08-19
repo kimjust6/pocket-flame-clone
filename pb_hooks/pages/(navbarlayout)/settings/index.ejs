@@ -1056,7 +1056,21 @@
 
             async saveSettings() {
                 try {
-                    await this.pb.collection('flame_settings').update(this.settings.id, { ...this.settings, user: this.userId });
+                    const payload = { ...this.settings, user: this.userId };
+                    if (this.settings.id && this.settings.id !== 'defaultsettings') {
+                        await this.pb.collection('flame_settings').update(this.settings.id, payload);
+                    } else {
+                        const existing = await this.pb.collection('flame_settings').getList(1, 1, {
+                            filter: `user = "${this.userId}"`
+                        });
+                        if (existing.items && existing.items.length > 0) {
+                            const updated = await this.pb.collection('flame_settings').update(existing.items[0].id, payload);
+                            this.settings.id = updated.id;
+                        } else {
+                            const created = await this.pb.collection('flame_settings').create(payload);
+                            this.settings.id = created.id;
+                        }
+                    }
                     this.showToast('Settings updated successfully!', 'success', 1000);
                     setTimeout(() => {
                         window.location.href = '/';
