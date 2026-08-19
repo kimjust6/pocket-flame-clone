@@ -666,8 +666,18 @@
                         this.showToast('Name and URL are required.', 'warning');
                         return;
                     }
-                    await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
-                    window.location.reload();
+                    const created = await this.pb.collection('applications').create({ ...this.appForm, user: this.userId });
+                    this.apps.push({
+                        id: created.id,
+                        user: created.user || this.userId,
+                        name: created.name,
+                        url: created.url,
+                        icon: created.icon || '',
+                        description: created.description || '',
+                        order: created.order
+                    });
+                    this.appModalOpen = false;
+                    this.showToast('Application added successfully!', 'success');
                 } catch (e) {
                     this.showToast('Failed to add application: ' + e.message, 'error');
                 }
@@ -684,8 +694,20 @@
                         this.showToast('Category name is required.', 'warning');
                         return;
                     }
-                    await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
-                    window.location.reload();
+                    const created = await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
+                    const newCat = {
+                        id: created.id,
+                        user: created.user || this.userId,
+                        name: created.name,
+                        order: created.order
+                    };
+                    this.categories.push(newCat);
+                    this.bookmarksByCategory.push({
+                        ...newCat,
+                        bookmarks: []
+                    });
+                    this.categoryModalOpen = false;
+                    this.showToast('Category added successfully!', 'success');
                 } catch (e) {
                     this.showToast('Failed to add category: ' + e.message, 'error');
                 }
@@ -716,8 +738,23 @@
                         this.showToast('Please select or create a category first.', 'warning');
                         return;
                     }
-                    await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
-                    window.location.reload();
+                    const created = await this.pb.collection('bookmarks').create({ ...this.bookmarkForm, user: this.userId });
+                    const newBookmark = {
+                        id: created.id,
+                        user: created.user || this.userId,
+                        name: created.name,
+                        url: created.url,
+                        icon: created.icon || '',
+                        category: created.category,
+                        order: created.order
+                    };
+                    const cat = this.bookmarksByCategory.find(c => c.id === created.category);
+                    if (cat) {
+                        if (!cat.bookmarks) cat.bookmarks = [];
+                        cat.bookmarks.push(newBookmark);
+                    }
+                    this.bookmarkModalOpen = false;
+                    this.showToast('Bookmark link added successfully!', 'success');
                 } catch (e) {
                     this.showToast('Failed to add bookmark link: ' + e.message, 'error');
                 }
