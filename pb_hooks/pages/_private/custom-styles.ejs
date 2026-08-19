@@ -1,26 +1,32 @@
+<%
+    const s = (locals.settings || (locals.data && locals.data.settings) || {});
+    const bgLight = s.color_background_light || '#F8FAFC';
+    const priLight = s.color_primary_light || '#0F172A';
+    const accLight = s.color_accent_light || '#EAB308';
+
+    const bgDark = s.color_background || '#282525';
+    const priDark = s.color_primary || '#d9d9d9';
+    const accDark = s.color_accent || '#50fbc2';
+%>
 <style>
     [x-cloak] {
         display: none !important;
     }
 
-    /* System Default Variables for Light and Dark modes */
-    :root, [data-theme="flamelight"] {
-        --default-bg: #F8FAFC;
-        --default-primary: #0F172A;
-        --default-accent: #EAB308;
+    /* System / Custom Variables for Light and Dark modes */
+    :root, html:not(.dark), [data-theme="flamelight"] {
+        --color-background: <%= bgLight %>;
+        --color-primary: <%= priLight %>;
+        --color-accent: <%= accLight %>;
     }
 
     html.dark, [data-theme="yellowdark"] {
-        --default-bg: #181616;
-        --default-primary: #E7E5E4;
-        --default-accent: #50fbc2;
+        --color-background: <%= bgDark %>;
+        --color-primary: <%= priDark %>;
+        --color-accent: <%= accDark %>;
     }
 
     body {
-        --color-background: var(--custom-color-background, var(--default-bg));
-        --color-primary: var(--custom-color-primary, var(--default-primary));
-        --color-accent: var(--custom-color-accent, var(--default-accent));
-
         font-family:
             'Inter',
             system-ui,
