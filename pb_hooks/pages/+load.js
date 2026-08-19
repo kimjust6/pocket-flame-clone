@@ -33,20 +33,22 @@ module.exports = function (context) {
         let categories = [];
         let bookmarksByCategory = [];
         try {
-            const catRecords = $app.findRecordsByFilter("bookmark_categories", "1=1", "order, name", 100, 0);
+            const catRecords = $app.findRecordsByFilter("bookmark_categories", userFilter, "order, name", 100, 0, filterParams);
             categories = catRecords.map(cat => ({
                 id: cat.id,
                 name: cat.getString("name"),
                 order: cat.getInt("order")
             }));
 
-            let bookmarks = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
-            if (!bookmarks || bookmarks.length === 0) {
-                bookmarks = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
+            let bookmarks = [];
+            try {
+                bookmarks = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
+            } catch (err) {
+                console.error("Failed to fetch bookmarks for user:", err);
             }
 
             bookmarksByCategory = categories.map(cat => {
-                const catBookmarks = bookmarks.filter(b => b.getString("category") === cat.id);
+                const catBookmarks = (bookmarks || []).filter(b => b.getString("category") === cat.id);
                 return {
                     id: cat.id,
                     name: cat.name,

@@ -78,18 +78,27 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <template x-for="cat in filterBookmarks()" :key="cat.id">
-                <div class="p-6 rounded-xl border border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2">
-                    <h3 class="font-bold text-base text-[color:var(--color-accent)] border-b border-[color:var(--color-primary)]/10 pb-2.5 mb-4" x-text="cat.name"></h3>
-                    <div class="flex flex-col gap-2.5">
-                        <template x-for="bookmark in cat.bookmarks" :key="bookmark.id">
-                            <a :href="bookmark.url" target="_blank" rel="noreferrer" 
-                               class="flex items-center gap-3.5 py-2 px-3 rounded-lg hover:bg-[color:var(--color-primary)]/5 hover:text-[color:var(--color-accent)] transition-colors text-sm opacity-80 hover:opacity-100 group">
-                                <div class="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[color:var(--color-primary)] group-hover:text-[color:var(--color-accent)] transition-colors" 
-                                     x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`">
-                                </div>
-                                <span class="truncate font-medium" x-text="bookmark.name"></span>
-                            </a>
-                        </template>
+                <div class="p-6 rounded-xl border border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between border-b border-[color:var(--color-primary)]/10 pb-2.5 mb-4">
+                            <h3 class="font-bold text-base text-[color:var(--color-accent)]" x-text="cat.name"></h3>
+                            <button @click="openBookmarkModal(cat.id)" class="w-6 h-6 rounded-full p-0 flex items-center justify-center btn btn-ghost btn-xs text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)] text-xs font-bold" title="Add bookmark to this category">+</button>
+                        </div>
+                        <div class="flex flex-col gap-2.5">
+                            <template x-for="bookmark in cat.bookmarks" :key="bookmark.id">
+                                <a :href="bookmark.url" target="_blank" rel="noreferrer" 
+                                   class="flex items-center gap-3.5 py-2 px-3 rounded-lg hover:bg-[color:var(--color-primary)]/5 hover:text-[color:var(--color-accent)] transition-colors text-sm opacity-80 hover:opacity-100 group">
+                                    <div class="w-5 h-5 flex-shrink-0 flex items-center justify-center text-[color:var(--color-primary)] group-hover:text-[color:var(--color-accent)] transition-colors" 
+                                         x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`">
+                                    </div>
+                                    <span class="truncate font-medium" x-text="bookmark.name"></span>
+                                </a>
+                            </template>
+                            <div x-show="!cat.bookmarks || cat.bookmarks.length === 0" class="py-4 text-center border border-dashed border-[color:var(--color-primary)]/10 rounded-lg text-xs opacity-50">
+                                <p class="mb-2">No bookmarks in this category yet.</p>
+                                <button @click="openBookmarkModal(cat.id)" class="btn btn-ghost btn-xs text-[color:var(--color-accent)] font-semibold">+ Add Bookmark</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -97,11 +106,10 @@
     </section>
 
     <!-- Empty State for Bookmarks -->
-    <div x-show="bookmarksByCategory.length === 0" class="text-center py-12 border border-dashed border-[color:var(--color-primary)]/10 rounded-xl mb-12">
-        <p class="text-sm opacity-50 mb-3">No bookmarks configured yet.</p>
+    <div x-show="categories.length === 0" class="text-center py-12 border border-dashed border-[color:var(--color-primary)]/10 rounded-xl mb-12">
+        <p class="text-sm opacity-50 mb-3">No bookmark categories configured yet.</p>
         <div class="flex justify-center gap-2">
             <button @click="openCategoryModal()" class="btn btn-xs btn-outline border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]">Add Category</button>
-            <button @click="openBookmarkModal()" class="btn btn-xs btn-outline border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]" :disabled="categories.length === 0">Add Bookmark</button>
         </div>
     </div>
 
@@ -183,6 +191,7 @@
                 <div>
                     <label class="block font-semibold uppercase opacity-60 mb-1">Category</label>
                     <select x-model="bookmarkForm.category" class="select select-sm select-bordered w-full bg-[color:var(--color-background)] border-[color:var(--color-primary)]/20 text-sm">
+                        <option value="" disabled>-- Select Category --</option>
                         <template x-for="cat in categories" :key="cat.id">
                             <option :value="cat.id" x-text="cat.name" :selected="bookmarkForm.category === cat.id"></option>
                         </template>
@@ -340,22 +349,30 @@ function flameDashboard() {
             );
         },
 
-        filterBookmarks() {
-            if (!this.searchQuery) return this.bookmarksByCategory;
-            const q = this.searchQuery.toLowerCase();
+        hasBookmarks() {
+            return (this.bookmarksByCategory || []).some(cat => cat.bookmarks && cat.bookmarks.length > 0);
+        },
 
-            return this.bookmarksByCategory.map(cat => {
-                const filtered = cat.bookmarks.filter(b =>
-                    b.name.toLowerCase().includes(q) ||
-                    b.url.toLowerCase().includes(q)
+        filterBookmarks() {
+            const q = (this.searchQuery || '').trim().toLowerCase();
+            if (!q) {
+                return this.bookmarksByCategory || [];
+            }
+
+            return (this.bookmarksByCategory || []).map(cat => {
+                const catNameMatches = (cat.name || '').toLowerCase().includes(q);
+                const filtered = (cat.bookmarks || []).filter(b =>
+                    (b.name && b.name.toLowerCase().includes(q)) ||
+                    (b.url && b.url.toLowerCase().includes(q))
                 );
                 return {
                     id: cat.id,
                     name: cat.name,
                     order: cat.order,
-                    bookmarks: filtered
+                    bookmarks: catNameMatches ? (cat.bookmarks || []) : filtered,
+                    matches: catNameMatches || filtered.length > 0
                 };
-            }).filter(cat => cat.bookmarks.length > 0);
+            }).filter(cat => cat.matches);
         },
 
         openAppModal() {
@@ -387,19 +404,23 @@ function flameDashboard() {
                     alert('Category name is required.');
                     return;
                 }
-                await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
                 window.location.reload();
             } catch (e) {
                 alert('Failed to add category: ' + e.message);
             }
         },
 
-        openBookmarkModal() {
+        openBookmarkModal(categoryId = null) {
+            let selectedCat = categoryId;
+            if (!selectedCat && this.categories.length > 0) {
+                selectedCat = this.categories[0].id;
+            }
             this.bookmarkForm = {
                 name: '',
                 url: '',
                 icon: '',
-                category: this.categories.length > 0 ? this.categories[0].id : '',
+                category: selectedCat || '',
                 order: 10
             };
             this.bookmarkModalOpen = true;

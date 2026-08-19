@@ -1118,7 +1118,7 @@
             },
 
             isUserScopedTable(table) {
-                return table === 'apps' || table === 'bookmarks';
+                return table === 'apps' || table === 'bookmarks' || table === 'categories';
             },
 
             canReorderItem(table, item) {
@@ -1151,6 +1151,7 @@
 
                 if (table === 'categories') {
                     return {
+                        user: this.userId,
                         name: item.name,
                         order
                     };
@@ -1235,7 +1236,7 @@
                 if (cat) {
                     this.categoryForm = { ...cat };
                 } else {
-                    this.categoryForm = { id: '', name: '', order: this.categories.length + 1 };
+                    this.categoryForm = { id: '', user: this.userId, name: '', order: this.categories.length + 1 };
                 }
                 this.categoryModalOpen = true;
             },
@@ -1243,9 +1244,9 @@
             async saveCategory() {
                 try {
                     if (this.categoryForm.id) {
-                        await this.pb.collection('bookmark_categories').update(this.categoryForm.id, this.categoryForm);
+                        await this.pb.collection('bookmark_categories').update(this.categoryForm.id, { ...this.categoryForm, user: this.userId });
                     } else {
-                        await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                        await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
                     }
                     window.location.reload();
                 } catch (e) {

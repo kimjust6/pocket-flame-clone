@@ -5129,6 +5129,10 @@ input.tab:checked + .tab-content,
   padding: 2rem;
 }
 
+.p-0 {
+  padding: 0px;
+}
+
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;

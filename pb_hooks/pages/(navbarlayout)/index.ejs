@@ -122,6 +122,7 @@
     <div class="h-8 w-full"></div>
 
     <!-- Bookmarks Section -->
+    <!-- Bookmarks Section -->
     <section class="mb-12" x-show="filterBookmarks().length > 0" x-transition>
         <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center gap-3">
@@ -155,33 +156,58 @@
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             <template x-for="cat in filterBookmarks()" :key="cat.id">
                 <div
-                    class="border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2 rounded-xl border p-6"
+                    class="border-[color:var(--color-primary)]/10 bg-[color:var(--color-primary)]/2 flex flex-col justify-between rounded-xl border p-6"
                 >
-                    <h3
-                        class="border-[color:var(--color-primary)]/10 mb-4 border-b pb-2.5 text-base font-bold text-[color:var(--color-accent)]"
-                        x-text="cat.name"
-                    ></h3>
-                    <div class="flex flex-col gap-2.5">
-                        <template
-                            x-for="bookmark in cat.bookmarks"
-                            :key="bookmark.id"
+                    <div>
+                        <div
+                            class="border-[color:var(--color-primary)]/10 mb-4 flex items-center justify-between border-b pb-2.5"
                         >
-                            <a
-                                :href="bookmark.url"
-                                target="_blank"
-                                rel="noreferrer"
-                                class="hover:bg-[color:var(--color-primary)]/5 group flex items-center gap-3.5 rounded-lg px-3 py-2 text-sm opacity-80 transition-colors hover:text-[color:var(--color-accent)] hover:opacity-100"
+                            <h3
+                                class="text-base font-bold text-[color:var(--color-accent)]"
+                                x-text="cat.name"
+                            ></h3>
+                            <button
+                                @click="openBookmarkModal(cat.id)"
+                                class="btn btn-ghost btn-xs text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)] flex h-6 w-6 items-center justify-center rounded-full p-0 text-xs font-bold"
+                                title="Add bookmark to this category"
                             >
-                                <div
-                                    class="flex h-5 w-5 flex-shrink-0 items-center justify-center text-[color:var(--color-primary)] transition-colors group-hover:text-[color:var(--color-accent)]"
-                                    x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`"
-                                ></div>
-                                <span
-                                    class="truncate font-medium"
-                                    x-text="bookmark.name"
-                                ></span>
-                            </a>
-                        </template>
+                                +
+                            </button>
+                        </div>
+                        <div class="flex flex-col gap-2.5">
+                            <template
+                                x-for="bookmark in cat.bookmarks"
+                                :key="bookmark.id"
+                            >
+                                <a
+                                    :href="bookmark.url"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    class="hover:bg-[color:var(--color-primary)]/5 group flex items-center gap-3.5 rounded-lg px-3 py-2 text-sm opacity-80 transition-colors hover:text-[color:var(--color-accent)] hover:opacity-100"
+                                >
+                                    <div
+                                        class="flex h-5 w-5 flex-shrink-0 items-center justify-center text-[color:var(--color-primary)] transition-colors group-hover:text-[color:var(--color-accent)]"
+                                        x-html="bookmark.icon || `<svg class='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1'></path></svg>`"
+                                    ></div>
+                                    <span
+                                        class="truncate font-medium"
+                                        x-text="bookmark.name"
+                                    ></span>
+                                </a>
+                            </template>
+                            <div
+                                x-show="!cat.bookmarks || cat.bookmarks.length === 0"
+                                class="border-[color:var(--color-primary)]/10 rounded-lg border border-dashed py-4 text-center text-xs opacity-50"
+                            >
+                                <p class="mb-2">No bookmarks in this category yet.</p>
+                                <button
+                                    @click="openBookmarkModal(cat.id)"
+                                    class="btn btn-ghost btn-xs font-semibold text-[color:var(--color-accent)]"
+                                >
+                                    + Add Bookmark
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </template>
@@ -190,23 +216,16 @@
 
     <!-- Empty State for Bookmarks -->
     <div
-        x-show="bookmarksByCategory.length === 0"
+        x-show="categories.length === 0"
         class="border-[color:var(--color-primary)]/10 mb-12 rounded-xl border border-dashed py-12 text-center"
     >
-        <p class="mb-3 text-sm opacity-50">No bookmarks configured yet.</p>
+        <p class="mb-3 text-sm opacity-50">No bookmark categories configured yet.</p>
         <div class="flex justify-center gap-2">
             <button
                 @click="openCategoryModal()"
                 class="btn btn-outline btn-xs border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]"
             >
                 Add Category
-            </button>
-            <button
-                @click="openBookmarkModal()"
-                class="btn btn-outline btn-xs border-[color:var(--color-accent)] text-[color:var(--color-accent)] hover:bg-[color:var(--color-accent)] hover:text-[color:var(--color-background)]"
-                :disabled="categories.length === 0"
-            >
-                Add Bookmark
             </button>
         </div>
     </div>
@@ -392,6 +411,7 @@
                         x-model="bookmarkForm.category"
                         class="border-[color:var(--color-primary)]/20 select select-bordered select-sm w-full bg-[color:var(--color-background)] text-sm"
                     >
+                        <option value="" disabled>-- Select Category --</option>
                         <template x-for="cat in categories" :key="cat.id">
                             <option
                                 :value="cat.id"
@@ -608,22 +628,30 @@
                 );
             },
 
-            filterBookmarks() {
-                if (!this.searchQuery) return this.bookmarksByCategory;
-                const q = this.searchQuery.toLowerCase();
+            hasBookmarks() {
+                return (this.bookmarksByCategory || []).some(cat => cat.bookmarks && cat.bookmarks.length > 0);
+            },
 
-                return this.bookmarksByCategory.map(cat => {
-                    const filtered = cat.bookmarks.filter(b =>
-                        b.name.toLowerCase().includes(q) ||
-                        b.url.toLowerCase().includes(q)
+            filterBookmarks() {
+                const q = (this.searchQuery || '').trim().toLowerCase();
+                if (!q) {
+                    return this.bookmarksByCategory || [];
+                }
+
+                return (this.bookmarksByCategory || []).map(cat => {
+                    const catNameMatches = (cat.name || '').toLowerCase().includes(q);
+                    const filtered = (cat.bookmarks || []).filter(b =>
+                        (b.name && b.name.toLowerCase().includes(q)) ||
+                        (b.url && b.url.toLowerCase().includes(q))
                     );
                     return {
                         id: cat.id,
                         name: cat.name,
                         order: cat.order,
-                        bookmarks: filtered
+                        bookmarks: catNameMatches ? (cat.bookmarks || []) : filtered,
+                        matches: catNameMatches || filtered.length > 0
                     };
-                }).filter(cat => cat.bookmarks.length > 0);
+                }).filter(cat => cat.matches);
             },
 
             // Modal triggers
@@ -656,19 +684,23 @@
                         this.showToast('Category name is required.', 'warning');
                         return;
                     }
-                    await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                    await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
                     window.location.reload();
                 } catch (e) {
                     this.showToast('Failed to add category: ' + e.message, 'error');
                 }
             },
 
-            openBookmarkModal() {
+            openBookmarkModal(categoryId = null) {
+                let selectedCat = categoryId;
+                if (!selectedCat && this.categories.length > 0) {
+                    selectedCat = this.categories[0].id;
+                }
                 this.bookmarkForm = {
                     name: '',
                     url: '',
                     icon: '',
-                    category: this.categories.length > 0 ? this.categories[0].id : '',
+                    category: selectedCat || '',
                     order: 10
                 };
                 this.bookmarkModalOpen = true;
