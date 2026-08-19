@@ -5,7 +5,7 @@
  * @returns {{ profile: import('../../../../lib/pocketbase-types').UsersResponse }}
  */
 module.exports = function (context) {
-    const common = require('../../../../lib/common.js')
+    const common = require(__hooks + '/lib/common.js')
     const { TABLES } = common
     const user = context.request.auth
     if (!user) {

@@ -75,9 +75,9 @@ module.exports = {
      * @returns {{client: any, user: any}} Object containing the initialized client and user model (or null)
      */
     init: function (context) {
-        const { request } = context
-        const client = context.pb({ request })
-        const user = client.authStore.model
+        const request = context && context.request ? context.request : {}
+        const user = request.auth || null
+        const client = typeof context?.pb === 'function' ? context.pb({ request }) : null
         return { client, user }
     }
 }

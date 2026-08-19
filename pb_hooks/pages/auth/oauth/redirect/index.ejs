@@ -72,10 +72,39 @@
                 throw new Error('Invalid OAuth response from server.')
             }
 
+            const userId = json && json.record && json.record.id
+
+            // Fetch the user's configured session length from flame_settings.
+            // Fall back to 1 year (31536000 s) if the record or field is missing.
+            let maxAge = 31536000
+            if (userId) {
+                try {
+                    const settingsRes = await fetch(
+                        `/api/collections/flame_settings/records?filter=(user='${userId}')&perPage=1`,
+                        {
+                            headers: { Authorization: token },
+                            credentials: 'include',
+                        }
+                    )
+                    if (settingsRes.ok) {
+                        const settingsJson = await settingsRes.json()
+                        const record = settingsJson && settingsJson.items && settingsJson.items[0]
+                        if (record && record.google_auth_max_age) {
+                            const parsed = parseInt(record.google_auth_max_age, 10)
+                            if (!isNaN(parsed) && parsed > 0) {
+                                maxAge = parsed
+                            }
+                        }
+                    }
+                } catch (_) {
+                    // Silently fall back to default
+                }
+            }
+
             document.cookie =
                 'pb_auth=' +
                 encodeURIComponent(JSON.stringify({ token })) +
-                '; Path=/; SameSite=Lax; Max-Age=1209600'
+                '; Path=/; SameSite=Lax; Max-Age=' + maxAge
 
             localStorage.removeItem('pp_oauth_state')
             window.location.replace('/')

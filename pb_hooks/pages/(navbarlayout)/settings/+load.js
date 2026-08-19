@@ -19,7 +19,8 @@ module.exports = function (context) {
             weather_lat: "43.6532",
             weather_lon: "-79.3832",
             weather_unit: "celsius",
-            search_engine: "https://www.google.com/search?q="
+            search_engine: "https://www.google.com/search?q=",
+            google_auth_max_age: 31536000
         };
 
         try {
@@ -36,6 +37,7 @@ module.exports = function (context) {
                 record.set("weather_lon", settings.weather_lon);
                 record.set("weather_unit", settings.weather_unit);
                 record.set("search_engine", settings.search_engine);
+                record.set("google_auth_max_age", settings.google_auth_max_age);
                 $app.save(record);
             }
             if (record) {
@@ -48,7 +50,8 @@ module.exports = function (context) {
                     weather_lat: record.getString("weather_lat") || settings.weather_lat,
                     weather_lon: record.getString("weather_lon") || settings.weather_lon,
                     weather_unit: record.getString("weather_unit") || settings.weather_unit,
-                    search_engine: record.getString("search_engine") || settings.search_engine
+                    search_engine: record.getString("search_engine") || settings.search_engine,
+                    google_auth_max_age: record.getInt("google_auth_max_age") || settings.google_auth_max_age
                 };
             }
         } catch (e) {

@@ -1,7 +1,7 @@
 <script>
     ; (() => {
         const saved = localStorage.getItem('theme') || 'light'
-        const themeToken = saved === 'dark' ? 'yellowdark' : 'bumblebee'
+        const themeToken = saved === 'dark' ? 'yellowdark' : 'flamelight'
         document.documentElement.setAttribute('data-theme', themeToken)
         document.documentElement.classList.toggle('dark', saved === 'dark')
     })()

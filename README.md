@@ -1,6 +1,6 @@
-# Flame Startpage Clone
+# Flame Clone
 
-**Flame Startpage Clone** is a self-hosted, lightweight, and customizable startpage and bookmarks manager designed for your home server. Inspired by Flame, it lets you organize your daily applications and bookmarked links in one gorgeous dashboard.
+**Flame Clone** is a self-hosted, lightweight, and customizable startpage and bookmarks manager designed for your home server. Inspired by Flame, it lets you organize your daily applications and bookmarked links in one gorgeous dashboard.
 
 ## Features
 

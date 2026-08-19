@@ -6,21 +6,22 @@
         include('custom-styles.ejs') %>
     </head>
 
+    <%
+        const customBg = (locals.settings && locals.settings.color_background && locals.settings.color_background !== '#282525') ? locals.settings.color_background : '';
+        const customPrimary = (locals.settings && locals.settings.color_primary && locals.settings.color_primary !== '#d9d9d9') ? locals.settings.color_primary : '';
+        const customAccent = (locals.settings && locals.settings.color_accent && locals.settings.color_accent !== '#50fbc2') ? locals.settings.color_accent : '';
+        const customStyles = [
+            customBg ? `--custom-color-background: ${customBg};` : '',
+            customPrimary ? `--custom-color-primary: ${customPrimary};` : '',
+            customAccent ? `--custom-color-accent: ${customAccent};` : ''
+        ].filter(Boolean).join('');
+    %>
     <body
-        style="
-            --color-primary: <%= locals.settings ?
-                locals.settings.color_primary: '#d9d9d9' %>;
-            --color-accent: <%= locals.settings ?
-                locals.settings.color_accent: '#50fbc2' %>;
-            --color-background: <%= locals.settings ?
-                locals.settings.color_background: '#282525' %>;
-            background-color: var(--color-background);
-            color: var(--color-primary);
-        "
+        <% if (customStyles) { %>style="<%= customStyles %>"<% } %>
         class="min-h-screen"
     >
         <div class="relative flex min-h-screen flex-col">
-            <div x-on:click.outside="navOpen = false">
+            <div>
                 <%- include('header.ejs') %> <%- include('mobile-menu.ejs') %>
             </div>
 

@@ -3,7 +3,24 @@
         display: none !important;
     }
 
+    /* System Default Variables for Light and Dark modes */
+    :root, [data-theme="flamelight"] {
+        --default-bg: #F8FAFC;
+        --default-primary: #0F172A;
+        --default-accent: #EAB308;
+    }
+
+    html.dark, [data-theme="yellowdark"] {
+        --default-bg: #181616;
+        --default-primary: #E7E5E4;
+        --default-accent: #50fbc2;
+    }
+
     body {
+        --color-background: var(--custom-color-background, var(--default-bg));
+        --color-primary: var(--custom-color-primary, var(--default-primary));
+        --color-accent: var(--custom-color-accent, var(--default-accent));
+
         font-family:
             'Inter',
             system-ui,
@@ -11,10 +28,22 @@
             BlinkMacSystemFont,
             'Segoe UI',
             sans-serif;
-        background-color: var(--color-background, #282525);
-        color: var(--color-primary, #d9d9d9);
+        background-color: var(--color-background);
+        color: var(--color-primary);
         background-attachment: fixed;
         transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Form input contrast fixes for Light Theme */
+    html:not(.dark) input,
+    html:not(.dark) select,
+    html:not(.dark) textarea {
+        color: var(--color-primary);
+    }
+    
+    html:not(.dark) ::placeholder {
+        color: var(--color-primary);
+        opacity: 0.55;
     }
 
     .script-font {
@@ -30,12 +59,12 @@
     .glass-surface {
         background:
             radial-gradient(circle at 20% 20%,
-                rgba(139, 92, 246, 0.14),
+                rgba(234, 179, 8, 0.08),
                 transparent 32%),
             radial-gradient(circle at 80% 0%,
-                rgba(167, 139, 250, 0.12),
+                rgba(245, 158, 11, 0.06),
                 transparent 34%),
-            rgba(255, 255, 255, 0.85);
+            rgba(255, 255, 255, 0.9);
     }
 
     .dark .glass-surface {

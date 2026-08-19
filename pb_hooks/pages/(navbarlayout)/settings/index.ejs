@@ -203,6 +203,27 @@
                 >
             </div>
 
+            <div class="mt-4">
+                <label
+                    class="mb-2 block text-xs font-semibold uppercase opacity-60"
+                    >Google Login Session Length</label
+                >
+                <select
+                    x-model.number="settings.google_auth_max_age"
+                    class="border-[color:var(--color-primary)]/10 select select-bordered select-sm w-full bg-[color:var(--color-background)]"
+                >
+                    <option :value="604800">1 Week</option>
+                    <option :value="2592000">1 Month</option>
+                    <option :value="15552000">6 Months</option>
+                    <option :value="31536000">1 Year (default)</option>
+                    <option :value="63072000">2 Years</option>
+                    <option :value="157680000">5 Years</option>
+                </select>
+                <span class="mt-1 block text-[10px] opacity-40"
+                    >How long the Google OAuth login session cookie lasts before you are asked to sign in again.</span
+                >
+            </div>
+
             <div class="flex justify-end pt-4">
                 <button
                     type="submit"
@@ -824,15 +845,24 @@
     </div>
 </div>
 
+<script type="application/json" id="settings-dashboard-data">
+<%- JSON.stringify({
+    settings: data.settings || {},
+    applications: data.applications || [],
+    categories: data.categories || [],
+    bookmarks: data.bookmarks || []
+}) %>
+</script>
 <script src="/js/toast-helper.js"></script>
 <script>
     function settingsManager() {
+        const initialData = JSON.parse(document.getElementById('settings-dashboard-data')?.textContent || '{}');
         return window.withToastHelpers({
             activeTab: 'general',
-            settings: <%- JSON.stringify(data.settings) %>,
-            applications: <%- JSON.stringify(data.applications) %>,
-            categories: <%- JSON.stringify(data.categories) %>,
-            bookmarks: <%- JSON.stringify(data.bookmarks) %>,
+            settings: initialData.settings || {},
+            applications: initialData.applications || [],
+            categories: initialData.categories || [],
+            bookmarks: initialData.bookmarks || [],
             userId: '<%= locals.auth ? locals.auth.id : "" %>',
 
             // Modal forms state
