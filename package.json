@@ -8,6 +8,8 @@
     "css": "tailwindcss -i ./pb_hooks/pages/app.tailwind.css -o ./pb_hooks/pages/app.css --watch",
     "bundle:hooks": "esbuild ./node_modules/pocketpages/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages.bundle.pb.js && esbuild ./node_modules/pocketpages-plugin-ejs/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages-plugin-ejs.bundle.pb.js && esbuild ./node_modules/pocketpages-plugin-js-sdk/dist/index.js --bundle --format=cjs --platform=node --main-fields=main,module --target=es2020 --outfile=./pb_hooks/lib/pocketpages-plugin-js-sdk.bundle.pb.js",
     "push": "node scripts/push.mjs",
+    "push:win": "node scripts/push.mjs",
+    "push:linux": "node scripts/push-linux.mjs",
     "login": "phio login",
     "update": "pocketbase update",
     "typegen": "node scripts/typegen.mjs",
@@ -55,5 +57,8 @@
   "files": [
     "pb_hooks",
     "*.md"
-  ]
+  ],
+  "optionalDependencies": {
+    "@esbuild/linux-x64": "^0.28.2"
+  }
 }

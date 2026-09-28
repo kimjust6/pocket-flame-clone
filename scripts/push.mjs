@@ -16,10 +16,15 @@ function shellQuoteSingle(value) {
 }
 
 const workspaceRoot = process.cwd();
-const wslCwd = toWslPath(workspaceRoot);
-const deployCmd = `cd ${shellQuoteSingle(wslCwd)} && npx -y -p node@24 -p phio phio deploy blinks 2>&1`;
+const isWindows = process.platform === "win32";
 
-const result = spawnSync("wsl", ["bash", "-lc", deployCmd], {
+const targetCwd = isWindows ? toWslPath(workspaceRoot) : workspaceRoot;
+const deployCmd = `cd ${shellQuoteSingle(targetCwd)} && npx -y -p node@24 -p phio phio deploy blinks 2>&1`;
+
+const command = isWindows ? "wsl" : "bash";
+const args = isWindows ? ["bash", "-lc", deployCmd] : ["-lc", deployCmd];
+
+const result = spawnSync(command, args, {
     encoding: "utf8",
     stdio: ["inherit", "pipe", "pipe"],
 });
@@ -30,7 +35,7 @@ if (stdout) process.stdout.write(stdout);
 if (stderr) process.stderr.write(stderr);
 
 if (typeof result.status !== "number") {
-    throw result.error || new Error("WSL deploy did not return an exit status");
+    throw result.error || new Error(`${isWindows ? "WSL" : "Linux"} deploy did not return an exit status`);
 }
 
 const combined = `${stdout}\n${stderr}`;

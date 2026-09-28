@@ -115,6 +115,7 @@ export type BookmarkCategoriesRecord = {
 	name: string
 	order?: number
 	updated: IsoAutoDateString
+	user?: RecordIdString
 }
 
 export type BookmarksRecord = {
@@ -131,8 +132,11 @@ export type BookmarksRecord = {
 
 export type FlameSettingsRecord = {
 	color_accent?: string
+	color_accent_light?: string
 	color_background?: string
+	color_background_light?: string
 	color_primary?: string
+	color_primary_light?: string
 	created: IsoAutoDateString
 	id: string
 	search_engine?: string
