@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791473564094,
+    "generatedTime": 1791479326304,
     "data": [
         {
             "type": "file",
@@ -52,8 +52,8 @@
         {
             "type": "file",
             "name": "pb_public/js/kanban-app.js",
-            "size": 43351,
-            "hash": "f2612006cda2a782cb271c9ebf854e9d54325705920af69ed7b612a400ae2648"
+            "size": 54007,
+            "hash": "54dfaf923ae8621a66e32152b080c058d17ebd0f4c34cf2675e890e3c957f159"
         },
         {
             "type": "file",
@@ -786,8 +786,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/+layout.ejs",
-            "size": 1812,
-            "hash": "a070d31b993faa725ab999d3c5f8ab1e32cca14baca3af756c89dea18980c088"
+            "size": 12,
+            "hash": "3ca951f925b6db7b3ceac2c2934158c211989449f6c53ab21222b525a570e37d"
         },
         {
             "type": "file",
@@ -832,8 +832,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/index.ejs",
-            "size": 6372,
-            "hash": "990c579ac37762a016c32dda584739a3de3ab71642cac486d6c619bd031eba53"
+            "size": 5692,
+            "hash": "33e2ac6027e9eb222b15c025055f3402c509ae331ecc8aa456cce241078fdf32"
         },
         {
             "type": "folder",
@@ -842,8 +842,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/+load.js",
-            "size": 5088,
-            "hash": "9f423b900a60e4719bc14fb0f503991961bac6dc79ffc7c13b3c418f36642892"
+            "size": 5982,
+            "hash": "ca1984a349100a5721224ef1af9aa723572720de115c89f64d063148c1ed217a"
         },
         {
             "type": "file",
@@ -854,14 +854,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-task-modal.ejs",
-            "size": 10774,
-            "hash": "50f33b958a85e5e1e9a8892bbd1132187bf831af6adc829ee1dcac715ab1f401"
+            "size": 10831,
+            "hash": "57ddae35923b28cacacd3c8fba73a98313dfd408b6fcbbedee3db5e1b7a70cb1"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-stats.ejs",
-            "size": 2445,
-            "hash": "7ede1979a87f06fc466e4d7e27020624e0139081ebe3c6a658afd389a69cb1a0"
+            "size": 2639,
+            "hash": "fea1dcde4d8c4f73c690d2e1dbeb224de68375c26ee905893072ee9485a90937"
         },
         {
             "type": "file",
@@ -878,8 +878,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-card.ejs",
-            "size": 8658,
-            "hash": "c18bc101506984fa3fdea5c9259aa18054a9bfd681bffa7110c0150d54fc83ba"
+            "size": 8707,
+            "hash": "93c64dde172c2c30769f23ddc0b08b7bdd35b170d27d3a6331eff9585fe720b8"
         },
         {
             "type": "folder",

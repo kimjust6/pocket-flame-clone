@@ -206,7 +206,7 @@
             <div class="mt-4">
                 <label
                     class="mb-2 block text-xs font-semibold uppercase opacity-60"
-                    >Google Login Session Length</label
+                    >Login Session Length</label
                 >
                 <select
                     x-model.number="settings.google_auth_max_age"
@@ -217,10 +217,10 @@
                     <option :value="15552000">6 Months</option>
                     <option :value="31536000">1 Year (default)</option>
                     <option :value="63072000">2 Years</option>
-                    <option :value="157680000">5 Years</option>
+                    <option :value="94670856">3 Years (maximum)</option>
                 </select>
                 <span class="mt-1 block text-[10px] opacity-40"
-                    >How long the Google OAuth login session cookie lasts before you are asked to sign in again.</span
+                    >How long the login session lasts before you are asked to sign in again.</span
                 >
             </div>
 
@@ -916,6 +916,14 @@
             async saveSettings() {
                 try {
                     await this.pb.collection('flame_settings').update(this.settings.id, { ...this.settings, user: this.userId });
+                    if (this.pb.authStore.token && this.settings.google_auth_max_age) {
+                        const token = this.pb.authStore.token;
+                        document.cookie =
+                            'pb_auth=' +
+                            encodeURIComponent(JSON.stringify({ token })) +
+                            '; Path=/; SameSite=Lax; Max-Age=' +
+                            this.settings.google_auth_max_age;
+                    }
                     this.showToast('Settings updated successfully!', 'success', 1000);
                     setTimeout(() => {
                         window.location.href = '/';

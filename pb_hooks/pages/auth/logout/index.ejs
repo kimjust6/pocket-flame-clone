@@ -1,4 +1,5 @@
 <script server>
+    response.header("Set-Cookie", "pb_auth=; Path=/; SameSite=Lax; Max-Age=0")
     response.cookie('pb_auth', '')
     redirect('/')
 </script>

@@ -1,6 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    content: ['./pb_hooks/pages/**/*.{ejs,md}'],
+    content: [
+        './pb_hooks/pages/**/*.{ejs,md}',
+        './pb_public/**/*.js',
+    ],
+    safelist: [
+        {
+            pattern: /(border|bg|text)-(primary|warning|info|success|secondary|accent|error)(\/(30|5|60))?/,
+        },
+    ],
     darkMode: 'class',
     theme: {
         extend: {

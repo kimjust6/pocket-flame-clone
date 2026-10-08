@@ -8,16 +8,55 @@
 
     // Color definitions for customizable stages
     const STAGE_COLOR_MAP = {
-        primary: { dot: 'bg-primary', badge: 'badge-primary badge-outline' },
-        warning: { dot: 'bg-warning', badge: 'badge-warning badge-outline' },
-        info: { dot: 'bg-info', badge: 'badge-info badge-outline' },
-        success: { dot: 'bg-success', badge: 'badge-success badge-outline' },
+        primary: {
+            dot: 'bg-primary',
+            badge: 'badge-primary badge-outline',
+            card: 'border-primary/30 bg-primary/5',
+            text: 'text-primary',
+            subtext: 'text-primary/60',
+        },
+        warning: {
+            dot: 'bg-warning',
+            badge: 'badge-warning badge-outline',
+            card: 'border-warning/30 bg-warning/5',
+            text: 'text-warning',
+            subtext: 'text-warning/60',
+        },
+        info: {
+            dot: 'bg-info',
+            badge: 'badge-info badge-outline',
+            card: 'border-info/30 bg-info/5',
+            text: 'text-info',
+            subtext: 'text-info/60',
+        },
+        success: {
+            dot: 'bg-success',
+            badge: 'badge-success badge-outline',
+            card: 'border-success/30 bg-success/5',
+            text: 'text-success',
+            subtext: 'text-success/60',
+        },
         secondary: {
             dot: 'bg-secondary',
             badge: 'badge-secondary badge-outline',
+            card: 'border-secondary/30 bg-secondary/5',
+            text: 'text-secondary',
+            subtext: 'text-secondary/60',
         },
-        accent: { dot: 'bg-accent', badge: 'badge-accent badge-outline' },
-        error: { dot: 'bg-error', badge: 'badge-error badge-outline' },
+        accent: {
+            dot: 'bg-accent',
+            badge: 'badge-accent badge-outline',
+            card: 'border-accent/30 bg-accent/5',
+            text: 'text-accent',
+            subtext: 'text-accent/60',
+        },
+        error: {
+            dot: 'bg-error',
+            badge: 'badge-error badge-outline',
+            card: 'border-error/30 bg-error/5',
+            text: 'text-error',
+            subtext: 'text-error/60',
+        },
     }
 
     const PRIORITY_MAP = {
@@ -531,9 +570,11 @@
                         (s) => s.id === record.id || s.key === record.key
                     )
                     if (idx === -1) {
-                        this.stages.push(record)
+                        this.stages = [...this.stages, record]
                     } else {
-                        this.stages.splice(idx, 1, record)
+                        const copy = [...this.stages]
+                        copy.splice(idx, 1, record)
+                        this.stages = copy
                     }
                     if (shouldNotify) {
                         this.showToast(
@@ -546,14 +587,16 @@
                     const idx = this.stages.findIndex(
                         (s) => s.id === record.id || s.key === record.key
                     )
+                    const copy = [...this.stages]
                     if (idx !== -1) {
-                        this.stages.splice(idx, 1, {
-                            ...this.stages[idx],
+                        copy.splice(idx, 1, {
+                            ...copy[idx],
                             ...record,
                         })
                     } else {
-                        this.stages.push(record)
+                        copy.push(record)
                     }
+                    this.stages = copy
                 } else if (action === 'delete') {
                     this.stages = this.stages.filter(
                         (s) => s.id !== record.id && s.key !== record.key
@@ -1382,6 +1425,27 @@
                 return (
                     STAGE_COLOR_MAP[color]?.badge ||
                     STAGE_COLOR_MAP.primary.badge
+                )
+            },
+
+            stageCardClass(color) {
+                return (
+                    STAGE_COLOR_MAP[color]?.card ||
+                    STAGE_COLOR_MAP.primary.card
+                )
+            },
+
+            stageTextClass(color) {
+                return (
+                    STAGE_COLOR_MAP[color]?.text ||
+                    STAGE_COLOR_MAP.primary.text
+                )
+            },
+
+            stageSubtextClass(color) {
+                return (
+                    STAGE_COLOR_MAP[color]?.subtext ||
+                    STAGE_COLOR_MAP.primary.subtext
                 )
             },
 

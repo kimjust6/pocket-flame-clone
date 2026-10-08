@@ -1,5 +1,9 @@
 <!-- Kanban Quick Stats Cards Component -->
-<div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+<div
+    class="mb-6 grid grid-cols-2 gap-3 sm:gap-4"
+    :class="(sortedStages.length + 2) <= 4 ? 'sm:grid-cols-4' : ((sortedStages.length + 2) <= 6 ? 'sm:grid-cols-3 lg:grid-cols-6' : 'sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6')"
+>
+    <!-- Overall Total Tasks -->
     <div
         class="rounded-xl border border-base-300 bg-base-200/50 p-3.5 backdrop-blur-sm sm:p-4"
     >
@@ -14,48 +18,41 @@
         </div>
     </div>
 
-    <div
-        class="rounded-xl border border-warning/30 bg-warning/5 p-3.5 backdrop-blur-sm sm:p-4"
-    >
+    <!-- Dynamic Stage Totals -->
+    <template x-for="st in sortedStages" :key="st.id || st.key">
         <div
-            class="text-xs font-medium text-warning"
-            x-text="inProgressStageName"
+            class="rounded-xl border p-3.5 backdrop-blur-sm transition-all duration-200 sm:p-4"
+            :class="stageCardClass(st.color)"
         >
-            In Progress
-        </div>
-        <div class="mt-1 flex items-baseline gap-2">
-            <span
-                class="text-2xl font-black text-warning"
-                x-text="getCardsByStatus(inProgressStageKey).length"
-                >0</span
+            <div
+                class="flex items-center gap-1.5 text-xs font-medium truncate"
+                :class="stageTextClass(st.color)"
+                :title="st.name"
             >
-            <span class="text-xs text-warning/60">active</span>
+                <span
+                    class="h-2 w-2 rounded-full inline-block shrink-0"
+                    :class="colorDotClass(st.color)"
+                ></span>
+                <span class="truncate" x-text="st.name">Stage</span>
+            </div>
+            <div class="mt-1 flex items-baseline gap-2">
+                <span
+                    class="text-2xl font-black"
+                    :class="stageTextClass(st.color)"
+                    x-text="getCardsByStatus(st.key).length"
+                    >0</span
+                >
+                <span
+                    class="text-xs"
+                    :class="stageSubtextClass(st.color)"
+                    x-text="todos.length ? Math.round((getCardsByStatus(st.key).length / todos.length) * 100) + '%' : '0%'"
+                    >0%</span
+                >
+            </div>
         </div>
-    </div>
+    </template>
 
-    <div
-        class="rounded-xl border border-success/30 bg-success/5 p-3.5 backdrop-blur-sm sm:p-4"
-    >
-        <div
-            class="text-xs font-medium text-success"
-            x-text="completedStageName"
-        >
-            Completed
-        </div>
-        <div class="mt-1 flex items-baseline gap-2">
-            <span
-                class="text-2xl font-black text-success"
-                x-text="getCardsByStatus(completedStageKey).length"
-                >0</span
-            >
-            <span
-                class="text-xs text-success/60"
-                x-text="todos.length ? Math.round((getCardsByStatus(completedStageKey).length / todos.length) * 100) + '%' : '0%'"
-                >0%</span
-            >
-        </div>
-    </div>
-
+    <!-- Subtasks Progress -->
     <div
         class="rounded-xl border border-info/30 bg-info/5 p-3.5 backdrop-blur-sm sm:p-4"
     >
@@ -74,3 +71,4 @@
         </div>
     </div>
 </div>
+
