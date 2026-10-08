@@ -55,5 +55,9 @@
   "files": [
     "pb_hooks",
     "*.md"
-  ]
+  ],
+  "overrides": {
+    "basic-ftp": "^6.2.2",
+    "postcss-selector-parser": "^7.1.6"
+  }
 }
