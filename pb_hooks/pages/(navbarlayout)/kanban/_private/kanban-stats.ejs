@@ -1,0 +1,66 @@
+<!-- Kanban Quick Stats Cards Component -->
+<div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+    <div
+        class="rounded-xl border border-base-300 bg-base-200/50 p-3.5 backdrop-blur-sm sm:p-4"
+    >
+        <div class="text-xs font-medium text-base-content/60">Total Tasks</div>
+        <div class="mt-1 flex items-baseline gap-2">
+            <span
+                class="text-2xl font-black text-base-content"
+                x-text="todos.length"
+                >0</span
+            >
+            <span class="text-xs text-base-content/40">items</span>
+        </div>
+    </div>
+
+    <div
+        class="rounded-xl border border-warning/30 bg-warning/5 p-3.5 backdrop-blur-sm sm:p-4"
+    >
+        <div class="text-xs font-medium text-warning">In Progress</div>
+        <div class="mt-1 flex items-baseline gap-2">
+            <span
+                class="text-2xl font-black text-warning"
+                x-text="getCardsByStatus('in_progress').length"
+                >0</span
+            >
+            <span class="text-xs text-warning/60">active</span>
+        </div>
+    </div>
+
+    <div
+        class="rounded-xl border border-success/30 bg-success/5 p-3.5 backdrop-blur-sm sm:p-4"
+    >
+        <div class="text-xs font-medium text-success">Completed</div>
+        <div class="mt-1 flex items-baseline gap-2">
+            <span
+                class="text-2xl font-black text-success"
+                x-text="getCardsByStatus('done').length"
+                >0</span
+            >
+            <span
+                class="text-xs text-success/60"
+                x-text="todos.length ? Math.round((getCardsByStatus('done').length / todos.length) * 100) + '%' : '0%'"
+                >0%</span
+            >
+        </div>
+    </div>
+
+    <div
+        class="rounded-xl border border-info/30 bg-info/5 p-3.5 backdrop-blur-sm sm:p-4"
+    >
+        <div class="text-xs font-medium text-info">Subtasks Progress</div>
+        <div class="mt-1 flex items-baseline gap-2">
+            <span
+                class="text-2xl font-black text-info"
+                x-text="completedSubtasksCount + '/' + totalSubtasksCount"
+                >0/0</span
+            >
+            <span
+                class="text-xs text-info/60"
+                x-text="totalSubtasksCount ? Math.round((completedSubtasksCount / totalSubtasksCount) * 100) + '%' : '0%'"
+                >0%</span
+            >
+        </div>
+    </div>
+</div>

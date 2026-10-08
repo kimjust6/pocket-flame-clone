@@ -1,0 +1,62 @@
+<!-- Kanban Search & Filter Toolbar Component -->
+<div
+    class="mb-6 flex flex-col gap-3 rounded-xl border border-base-300 bg-base-200/30 p-3 sm:flex-row sm:items-center sm:justify-between"
+>
+    <div class="flex flex-1 items-center gap-2">
+        <div class="relative w-full max-w-xs">
+            <input
+                type="text"
+                x-model="searchQuery"
+                placeholder="Search tasks, subtasks, or tags..."
+                class="input input-sm input-bordered w-full pl-8 text-xs"
+            />
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-base-content/40"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+            </svg>
+        </div>
+
+        <!-- Priority filter -->
+        <select
+            x-model="filterPriority"
+            class="select select-bordered select-sm text-xs"
+        >
+            <option value="all">All Priorities</option>
+            <option value="urgent">🔥 Urgent</option>
+            <option value="high">⚠️ High</option>
+            <option value="medium">🔷 Medium</option>
+            <option value="low">🟢 Low</option>
+        </select>
+
+        <button
+            x-show="searchQuery || filterPriority !== 'all'"
+            @click="searchQuery = ''; filterPriority = 'all'"
+            class="btn btn-ghost btn-xs text-xs text-base-content/60"
+        >
+            Clear
+        </button>
+    </div>
+
+    <div class="flex items-center gap-2 text-xs text-base-content/60">
+        <span class="hidden sm:inline"
+            >Drag cards between stages or use arrow buttons</span
+        >
+        <button
+            x-show="getCardsByStatus('done').length > 0"
+            @click="clearCompletedTasks()"
+            class="btn btn-ghost btn-xs text-error hover:bg-error/10"
+        >
+            Clear Done
+        </button>
+    </div>
+</div>

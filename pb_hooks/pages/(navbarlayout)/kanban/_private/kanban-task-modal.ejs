@@ -1,0 +1,261 @@
+<!-- Task Detail & Edit Modal Component -->
+<dialog
+    id="task_modal"
+    class="modal modal-bottom sm:modal-middle"
+    :class="{ 'modal-open': modalOpen }"
+>
+    <div
+        class="modal-box border border-base-300 bg-base-100 shadow-2xl sm:max-w-xl"
+    >
+        <div
+            class="mb-4 flex items-center justify-between border-b border-base-300 pb-3"
+        >
+            <h3
+                class="text-lg font-bold text-base-content"
+                x-text="taskForm.id ? 'Edit Task & Subtasks' : 'Create New Task'"
+            ></h3>
+            <button
+                @click="closeTaskModal()"
+                class="btn btn-circle btn-ghost btn-sm"
+            >
+                ✕
+            </button>
+        </div>
+
+        <form @submit.prevent="saveTask()" class="space-y-4">
+            <!-- Title -->
+            <div>
+                <label
+                    class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                >
+                    Title <span class="text-error">*</span>
+                </label>
+                <input
+                    type="text"
+                    x-model="taskForm.title"
+                    required
+                    placeholder="What needs to be done?"
+                    class="input input-bordered w-full text-sm"
+                    autofocus
+                />
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label
+                    class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                >
+                    Description / Notes
+                </label>
+                <textarea
+                    x-model="taskForm.description"
+                    rows="2"
+                    placeholder="Add additional details, links, or context..."
+                    class="textarea textarea-bordered w-full text-sm"
+                ></textarea>
+            </div>
+
+            <!-- SUBTASKS / CHECKLIST SECTION IN MODAL -->
+            <div class="rounded-xl border border-base-300 bg-base-200/40 p-3.5">
+                <div class="mb-2 flex items-center justify-between">
+                    <label
+                        class="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-base-content/80"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-3.5 w-3.5 text-primary"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                            />
+                        </svg>
+                        Subtasks / Checklist
+                    </label>
+                    <span
+                        x-show="taskForm.subtasks && taskForm.subtasks.length > 0"
+                        class="text-[11px] font-semibold text-base-content/60"
+                        x-text="taskForm.subtasks.filter(s => s.completed).length + ' of ' + taskForm.subtasks.length + ' done'"
+                    ></span>
+                </div>
+
+                <!-- Existing Subtasks List -->
+                <div class="mb-3 max-h-48 space-y-2 overflow-y-auto">
+                    <template
+                        x-for="(sub, sIdx) in taskForm.subtasks"
+                        :key="sub.id || sIdx"
+                    >
+                        <div
+                            class="flex items-center gap-2 rounded-lg border border-base-300 bg-base-100 p-2"
+                        >
+                            <input
+                                type="checkbox"
+                                x-model="sub.completed"
+                                class="checkbox-primary checkbox checkbox-xs"
+                            />
+                            <input
+                                type="text"
+                                x-model="sub.title"
+                                placeholder="Subtask title"
+                                class="input input-xs input-ghost flex-1 text-xs focus:bg-transparent"
+                                :class="sub.completed ? 'line-through opacity-50' : ''"
+                            />
+                            <button
+                                type="button"
+                                @click="removeSubtaskFromForm(sIdx)"
+                                class="btn btn-square btn-ghost btn-xs text-error hover:bg-error/10"
+                                title="Delete Subtask"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Add New Subtask Input -->
+                <div class="flex gap-2">
+                    <input
+                        type="text"
+                        x-model="newSubtaskTitle"
+                        @keydown.enter.prevent="addSubtaskToForm()"
+                        placeholder="Add a new subtask (press Enter)..."
+                        class="input input-sm input-bordered flex-1 text-xs"
+                    />
+                    <button
+                        type="button"
+                        @click="addSubtaskToForm()"
+                        class="btn btn-outline btn-sm text-xs"
+                    >
+                        + Add
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stage / Status & Priority Row -->
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                    <label
+                        class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                    >
+                        Stage / Status
+                    </label>
+                    <select
+                        x-model="taskForm.status"
+                        class="select select-bordered w-full text-sm"
+                    >
+                        <template x-for="st in stages" :key="st.key">
+                            <option :value="st.key" x-text="st.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label
+                        class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                    >
+                        Priority
+                    </label>
+                    <select
+                        x-model="taskForm.priority"
+                        class="select select-bordered w-full text-sm"
+                    >
+                        <option value="low">🟢 Low</option>
+                        <option value="medium">🔷 Medium</option>
+                        <option value="high">⚠️ High</option>
+                        <option value="urgent">🔥 Urgent</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Due Date & Tags Row -->
+            <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div>
+                    <label
+                        class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                    >
+                        Due Date
+                    </label>
+                    <input
+                        type="date"
+                        x-model="taskForm.due_date"
+                        class="input input-bordered w-full text-sm"
+                    />
+                </div>
+
+                <div>
+                    <label
+                        class="mb-1 block text-xs font-semibold uppercase text-base-content/70"
+                    >
+                        Tags (comma separated)
+                    </label>
+                    <input
+                        type="text"
+                        x-model="taskForm.tags"
+                        placeholder="feature, dev, bug"
+                        class="input input-bordered w-full text-sm"
+                    />
+                </div>
+            </div>
+
+            <!-- Modal Actions -->
+            <div class="modal-action flex items-center justify-between pt-4">
+                <div>
+                    <button
+                        type="button"
+                        x-show="taskForm.id"
+                        @click="deleteTask(taskForm.id)"
+                        class="btn btn-outline btn-error btn-sm gap-1"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                        </svg>
+                        Delete
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button
+                        type="button"
+                        @click="closeTaskModal()"
+                        class="btn btn-ghost btn-sm"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary btn-sm min-w-24 shadow-sm"
+                        :disabled="saving"
+                    >
+                        <span
+                            x-show="saving"
+                            class="loading loading-spinner loading-xs"
+                        ></span>
+                        <span
+                            x-show="!saving"
+                            x-text="taskForm.id ? 'Save Changes' : 'Create Task'"
+                        ></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button @click="closeTaskModal()">close</button>
+    </form>
+</dialog>

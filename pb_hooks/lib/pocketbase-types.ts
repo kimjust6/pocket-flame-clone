@@ -15,6 +15,7 @@ export const Collections = {
     BookmarkCategories: 'bookmark_categories',
     Bookmarks: 'bookmarks',
     FlameSettings: 'flame_settings',
+    KanbanStages: 'kanban_stages',
     Todos: 'todos',
     Users: 'users',
 } as const
@@ -144,6 +145,17 @@ export type FlameSettingsRecord = {
     weather_unit?: string
 }
 
+export type KanbanStagesRecord = {
+    color?: string
+    created: IsoAutoDateString
+    id: string
+    key: string
+    name: string
+    order?: number
+    updated: IsoAutoDateString
+    user?: RecordIdString
+}
+
 export type TodosRecord = {
     created: IsoAutoDateString
     description?: string
@@ -152,6 +164,7 @@ export type TodosRecord = {
     order?: number
     priority?: string
     status: string
+    subtasks?: any
     tags?: string
     title: string
     updated: IsoAutoDateString
@@ -193,6 +206,8 @@ export type BookmarksResponse<Texpand = unknown> = Required<BookmarksRecord> &
     BaseSystemFields<Texpand>
 export type FlameSettingsResponse<Texpand = unknown> =
     Required<FlameSettingsRecord> & BaseSystemFields<Texpand>
+export type KanbanStagesResponse<Texpand = unknown> =
+    Required<KanbanStagesRecord> & BaseSystemFields<Texpand>
 export type TodosResponse<Texpand = unknown> = Required<TodosRecord> &
     BaseSystemFields<Texpand>
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> &
@@ -210,6 +225,7 @@ export type CollectionRecords = {
     bookmark_categories: BookmarkCategoriesRecord
     bookmarks: BookmarksRecord
     flame_settings: FlameSettingsRecord
+    kanban_stages: KanbanStagesRecord
     todos: TodosRecord
     users: UsersRecord
 }
@@ -224,6 +240,7 @@ export type CollectionResponses = {
     bookmark_categories: BookmarkCategoriesResponse
     bookmarks: BookmarksResponse
     flame_settings: FlameSettingsResponse
+    kanban_stages: KanbanStagesResponse
     todos: TodosResponse
     users: UsersResponse
 }
@@ -235,8 +252,7 @@ type ProcessCreateAndUpdateFields<T> = Omit<
         // Omit AutoDate fields
         [K in keyof T as Extract<T[K], IsoAutoDateString> extends never
             ? K
-            : never]: // Convert FileNameString to File
-        T[K] extends infer U
+            : never]: T[K] extends infer U // Convert FileNameString to File
             ? U extends FileNameString | FileNameString[]
                 ? U extends any[]
                     ? File[]

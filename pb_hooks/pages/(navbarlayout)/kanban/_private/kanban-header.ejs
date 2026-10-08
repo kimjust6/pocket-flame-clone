@@ -1,0 +1,173 @@
+<!-- Kanban Top Header & Navigation Bar -->
+<div
+    class="mb-8 flex flex-col gap-4 border-b border-base-300 pb-6 sm:flex-row sm:items-center sm:justify-between"
+>
+    <div>
+        <div class="flex items-center gap-3">
+            <a
+                href="/"
+                class="btn btn-ghost btn-sm -ml-2 gap-1 text-xs opacity-70 hover:opacity-100"
+            >
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                </svg>
+                Startpage
+            </a>
+            <span class="text-base-content/30">•</span>
+            <span
+                class="text-xs font-semibold uppercase tracking-wider text-primary"
+                >Workspace</span
+            >
+        </div>
+        <div class="mt-2 flex items-center gap-3">
+            <h1
+                class="text-2xl font-black tracking-tight text-base-content sm:text-3xl"
+            >
+                Kanban Board
+            </h1>
+            <!-- Live Socket Indicator -->
+            <div
+                class="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-md transition-colors"
+                :class="{
+                    'border-success/30 bg-success/10 text-success': socketStatus === 'connected',
+                    'border-warning/30 bg-warning/10 text-warning': socketStatus === 'connecting',
+                    'border-base-300 bg-base-200 text-base-content/60': socketStatus === 'disconnected'
+                }"
+                title="Real-time Socket Synchronization Status"
+            >
+                <span class="relative flex h-2 w-2">
+                    <span
+                        x-show="socketStatus === 'connected'"
+                        class="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-75"
+                    ></span>
+                    <span
+                        class="relative inline-flex h-2 w-2 rounded-full"
+                        :class="{
+                            'bg-success': socketStatus === 'connected',
+                            'bg-warning animate-pulse': socketStatus === 'connecting',
+                            'bg-base-content/40': socketStatus === 'disconnected'
+                        }"
+                    ></span>
+                </span>
+                <span x-text="socketStatusText"></span>
+                <span
+                    x-show="lastSocketActivity"
+                    class="ml-1 hidden text-[10px] opacity-75 sm:inline"
+                    x-text="`(${lastSocketActivity})`"
+                ></span>
+            </div>
+        </div>
+        <p class="mt-1 text-sm text-base-content/60">
+            Organize tasks with customizable stages, checklist subtasks, and
+            real-time live synchronization.
+        </p>
+    </div>
+
+    <!-- Top Action Buttons -->
+    <div class="flex flex-wrap items-center gap-2">
+        <button
+            @click="openTaskModal(null, stages.length ? stages[0].key : 'todo')"
+            class="btn btn-primary btn-sm gap-2 shadow-sm transition-transform active:scale-95"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                />
+            </svg>
+            New Task
+        </button>
+
+        <!-- Manage Stages / Columns Button -->
+        <button
+            @click="openStagesModal()"
+            class="btn btn-outline btn-sm gap-1.5"
+            title="Customize workflow stages and columns"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+            </svg>
+            Customize Stages
+        </button>
+
+        <button
+            x-show="todos.length === 0"
+            @click="seedStarterTasks()"
+            class="btn btn-outline btn-sm gap-1"
+            :disabled="seeding"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                />
+            </svg>
+            Load Starter Tasks
+        </button>
+
+        <button
+            @click="refreshRealtime()"
+            class="btn btn-square btn-ghost btn-sm"
+            title="Reconnect socket stream"
+        >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4 transition-transform hover:rotate-180"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+            </svg>
+        </button>
+    </div>
+</div>

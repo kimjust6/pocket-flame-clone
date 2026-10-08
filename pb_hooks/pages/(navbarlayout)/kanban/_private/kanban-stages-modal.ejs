@@ -1,0 +1,166 @@
+<!-- Customize Stages Modal Component -->
+<dialog
+    id="stages_modal"
+    class="modal modal-bottom sm:modal-middle"
+    :class="{ 'modal-open': stagesModalOpen }"
+>
+    <div
+        class="modal-box border border-base-300 bg-base-100 shadow-2xl sm:max-w-xl"
+    >
+        <div
+            class="mb-4 flex items-center justify-between border-b border-base-300 pb-3"
+        >
+            <div class="flex items-center gap-2">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-primary"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                    />
+                </svg>
+                <h3 class="text-lg font-bold text-base-content">
+                    Customize Kanban Stages
+                </h3>
+            </div>
+            <button
+                @click="closeStagesModal()"
+                class="btn btn-circle btn-ghost btn-sm"
+            >
+                ✕
+            </button>
+        </div>
+
+        <p class="mb-4 text-xs text-base-content/60">
+            Add, rename, recolor, and reorder stages for your workflow. Changes
+            sync across live sockets instantly.
+        </p>
+
+        <!-- Stages List -->
+        <div class="mb-4 max-h-72 space-y-3 overflow-y-auto p-1">
+            <template x-for="(st, idx) in stagesForm" :key="st.id || idx">
+                <div
+                    class="flex items-center gap-2 rounded-xl border border-base-300 bg-base-200/50 p-2.5"
+                >
+                    <!-- Up/Down Order Buttons -->
+                    <div class="flex flex-col gap-0.5">
+                        <button
+                            type="button"
+                            @click="moveStageOrder(idx, -1)"
+                            :disabled="idx === 0"
+                            class="btn btn-ghost btn-xs h-4 min-h-0 w-4 p-0 text-base-content/40 hover:text-base-content disabled:opacity-20"
+                        >
+                            ▲
+                        </button>
+                        <button
+                            type="button"
+                            @click="moveStageOrder(idx, 1)"
+                            :disabled="idx === stagesForm.length - 1"
+                            class="btn btn-ghost btn-xs h-4 min-h-0 w-4 p-0 text-base-content/40 hover:text-base-content disabled:opacity-20"
+                        >
+                            ▼
+                        </button>
+                    </div>
+
+                    <!-- Stage Color Selector -->
+                    <div class="relative">
+                        <select
+                            x-model="st.color"
+                            class="select select-bordered select-xs w-24 text-xs font-semibold"
+                        >
+                            <option value="primary">Yellow</option>
+                            <option value="warning">Orange</option>
+                            <option value="info">Blue</option>
+                            <option value="success">Green</option>
+                            <option value="secondary">Amber</option>
+                            <option value="accent">Purple</option>
+                            <option value="error">Red</option>
+                        </select>
+                    </div>
+
+                    <!-- Stage Name Input -->
+                    <input
+                        type="text"
+                        x-model="st.name"
+                        placeholder="Stage Name"
+                        required
+                        class="input input-sm input-bordered flex-1 text-xs font-semibold"
+                    />
+
+                    <!-- Delete Stage Button -->
+                    <button
+                        type="button"
+                        @click="deleteStage(idx)"
+                        class="btn btn-square btn-ghost btn-sm text-error hover:bg-error/10"
+                        :disabled="stagesForm.length <= 1"
+                        title="Delete Stage"
+                    >
+                        ✕
+                    </button>
+                </div>
+            </template>
+        </div>
+
+        <!-- Add Stage Row -->
+        <div class="mb-4 flex gap-2">
+            <input
+                type="text"
+                x-model="newStageName"
+                @keydown.enter.prevent="addNewStage()"
+                placeholder="New stage name (e.g. Code Review, QA, Backlog)..."
+                class="input input-sm input-bordered flex-1 text-xs"
+            />
+            <button
+                type="button"
+                @click="addNewStage()"
+                class="btn btn-outline btn-sm gap-1 text-xs"
+            >
+                + Add Stage
+            </button>
+        </div>
+
+        <!-- Modal Action Buttons -->
+        <div
+            class="modal-action flex items-center justify-between border-t border-base-300 pt-3"
+        >
+            <button
+                type="button"
+                @click="resetToDefaultStages()"
+                class="btn btn-ghost btn-sm text-xs opacity-60 hover:opacity-100"
+            >
+                Reset Defaults
+            </button>
+
+            <div class="flex items-center gap-2">
+                <button
+                    type="button"
+                    @click="closeStagesModal()"
+                    class="btn btn-ghost btn-sm"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    @click="saveAllStages()"
+                    class="btn btn-primary btn-sm min-w-28 shadow-sm"
+                    :disabled="savingStages"
+                >
+                    <span
+                        x-show="savingStages"
+                        class="loading loading-spinner loading-xs"
+                    ></span>
+                    <span x-show="!savingStages">Save Stages</span>
+                </button>
+            </div>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button @click="closeStagesModal()">close</button>
+    </form>
+</dialog>
