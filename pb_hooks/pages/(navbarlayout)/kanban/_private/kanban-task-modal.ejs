@@ -80,7 +80,7 @@
                     <span
                         x-show="taskForm.subtasks && taskForm.subtasks.length > 0"
                         class="text-[11px] font-semibold text-base-content/60"
-                        x-text="taskForm.subtasks.filter(s => s.completed).length + ' of ' + taskForm.subtasks.length + ' done'"
+                        x-text="(taskForm.subtasks ? taskForm.subtasks.filter(s => s && s.completed).length : 0) + ' of ' + (taskForm.subtasks ? taskForm.subtasks.length : 0) + ' done'"
                     ></span>
                 </div>
 

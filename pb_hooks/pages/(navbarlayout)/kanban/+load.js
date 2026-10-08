@@ -23,19 +23,40 @@ module.exports = function (context) {
                 { user: user.id }
             )
 
-            todos = records.map((r) => {
-                let subtasks = []
+            function extractSubtasks(record) {
                 try {
-                    const raw = r.get('subtasks')
-                    if (Array.isArray(raw)) {
-                        subtasks = raw
-                    } else if (typeof raw === 'string' && raw.trim()) {
-                        subtasks = JSON.parse(raw)
+                    const raw = record.getString('subtasks')
+                    if (!raw || typeof raw !== 'string' || !raw.trim()) {
+                        return []
                     }
+                    let parsed = JSON.parse(raw)
+                    if (typeof parsed === 'string') {
+                        try {
+                            parsed = JSON.parse(parsed)
+                        } catch (_) {}
+                    }
+                    if (!Array.isArray(parsed)) {
+                        return []
+                    }
+                    return parsed
+                        .filter(
+                            (item) =>
+                                item &&
+                                typeof item === 'object' &&
+                                typeof item.title === 'string' &&
+                                item.title.trim() !== ''
+                        )
+                        .map((item, idx) => ({
+                            id: String(item.id || 'st_' + (idx + 1)),
+                            title: String(item.title).trim(),
+                            completed: Boolean(item.completed),
+                        }))
                 } catch (e) {
-                    subtasks = []
+                    return []
                 }
+            }
 
+            todos = records.map((r) => {
                 return {
                     id: r.id,
                     title: r.getString('title'),
@@ -45,7 +66,7 @@ module.exports = function (context) {
                     order: r.getInt('order') || 0,
                     due_date: r.getString('due_date'),
                     tags: r.getString('tags'),
-                    subtasks: Array.isArray(subtasks) ? subtasks : [],
+                    subtasks: extractSubtasks(r),
                     user: r.getString('user'),
                     created: r.getString('created'),
                     updated: r.getString('updated'),

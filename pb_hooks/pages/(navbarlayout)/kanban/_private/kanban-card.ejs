@@ -108,7 +108,7 @@
                 Subtasks
             </span>
             <span
-                x-text="countCompletedSubtasks(task) + '/' + task.subtasks.length"
+                x-text="countCompletedSubtasks(task) + '/' + (task.subtasks ? task.subtasks.length : 0)"
             ></span>
         </div>
 
@@ -118,14 +118,14 @@
         >
             <div
                 class="h-full bg-primary transition-all duration-300"
-                :style="`width: ${task.subtasks.length ? Math.round((countCompletedSubtasks(task) / task.subtasks.length) * 100) : 0}%`"
+                :style="`width: ${(task.subtasks && task.subtasks.length) ? Math.round((countCompletedSubtasks(task) / task.subtasks.length) * 100) : 0}%`"
             ></div>
         </div>
 
         <!-- Subtasks Interactive Checklist -->
         <div class="mt-2 space-y-1.5">
             <template
-                x-for="(sub, sIdx) in task.subtasks"
+                x-for="(sub, sIdx) in (task.subtasks || [])"
                 :key="sub.id || sIdx"
             >
                 <label

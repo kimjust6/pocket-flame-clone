@@ -17,11 +17,16 @@
     <div
         class="rounded-xl border border-warning/30 bg-warning/5 p-3.5 backdrop-blur-sm sm:p-4"
     >
-        <div class="text-xs font-medium text-warning">In Progress</div>
+        <div
+            class="text-xs font-medium text-warning"
+            x-text="inProgressStageName"
+        >
+            In Progress
+        </div>
         <div class="mt-1 flex items-baseline gap-2">
             <span
                 class="text-2xl font-black text-warning"
-                x-text="getCardsByStatus('in_progress').length"
+                x-text="getCardsByStatus(inProgressStageKey).length"
                 >0</span
             >
             <span class="text-xs text-warning/60">active</span>
@@ -31,16 +36,21 @@
     <div
         class="rounded-xl border border-success/30 bg-success/5 p-3.5 backdrop-blur-sm sm:p-4"
     >
-        <div class="text-xs font-medium text-success">Completed</div>
+        <div
+            class="text-xs font-medium text-success"
+            x-text="completedStageName"
+        >
+            Completed
+        </div>
         <div class="mt-1 flex items-baseline gap-2">
             <span
                 class="text-2xl font-black text-success"
-                x-text="getCardsByStatus('done').length"
+                x-text="getCardsByStatus(completedStageKey).length"
                 >0</span
             >
             <span
                 class="text-xs text-success/60"
-                x-text="todos.length ? Math.round((getCardsByStatus('done').length / todos.length) * 100) + '%' : '0%'"
+                x-text="todos.length ? Math.round((getCardsByStatus(completedStageKey).length / todos.length) * 100) + '%' : '0%'"
                 >0%</span
             >
         </div>

@@ -3,7 +3,7 @@
  * Handles state management, drag-and-drop, customizable stages,
  * subtask checklists, and real-time socket synchronization.
  */
-; (function (global) {
+;(function (global) {
     'use strict'
 
     // Color definitions for customizable stages
@@ -99,6 +99,46 @@
     }
 
     /**
+     * Normalizes and cleans subtasks to ensure an array of valid subtask objects.
+     * Prevents stray byte numbers, strings, or malformed objects from corrupting counts.
+     * @param {any} raw
+     * @returns {Array<{id: string, title: string, completed: boolean}>}
+     */
+    function normalizeSubtasks(raw) {
+        if (!raw) return []
+        let list = raw
+        if (typeof list === 'string') {
+            try {
+                list = JSON.parse(list)
+            } catch (e) {
+                return []
+            }
+        }
+        if (typeof list === 'string') {
+            try {
+                list = JSON.parse(list)
+            } catch (e) {
+                return []
+            }
+        }
+        if (!Array.isArray(list)) return []
+
+        return list
+            .filter(
+                (item) =>
+                    item &&
+                    typeof item === 'object' &&
+                    typeof item.title === 'string' &&
+                    item.title.trim() !== ''
+            )
+            .map((item, idx) => ({
+                id: String(item.id || 'st_' + Date.now() + '_' + idx),
+                title: String(item.title).trim(),
+                completed: Boolean(item.completed),
+            }))
+    }
+
+    /**
      * Converts stage title to slug key.
      * @param {string} name
      * @returns {string}
@@ -117,10 +157,16 @@
      */
     function kanbanApp() {
         const initial = loadInitialPayload('kanban-initial-data')
+        const initialTodos = (
+            Array.isArray(initial.todos) ? initial.todos : []
+        ).map((t) => ({
+            ...t,
+            subtasks: normalizeSubtasks(t.subtasks),
+        }))
 
         const baseComponent = {
             // Data Collections
-            todos: Array.isArray(initial.todos) ? initial.todos : [],
+            todos: initialTodos,
             stages:
                 Array.isArray(initial.stages) && initial.stages.length > 0
                     ? initial.stages
@@ -163,7 +209,24 @@
             stagesModalOpen: false,
             savingStages: false,
             newStageName: '',
-            stagesForm: [],
+            // Internal Local Actions Tracking (prevents duplicate self-notifications)
+            _localActionTimestamps: {},
+
+            markLocalAction(action, id) {
+                if (!id) return
+                if (!this._localActionTimestamps)
+                    this._localActionTimestamps = {}
+                this._localActionTimestamps[`${action}:${id}`] = Date.now()
+            },
+
+            isLocalAction(action, id) {
+                if (!id || !this._localActionTimestamps) return false
+                const timestamp = this._localActionTimestamps[`${action}:${id}`]
+                if (timestamp && Date.now() - timestamp < 6000) {
+                    return true
+                }
+                return false
+            },
 
             // --- COMPUTED PROPERTIES ---
 
@@ -173,9 +236,79 @@
                 )
             },
 
+            get completedStage() {
+                if (!this.sortedStages || !this.sortedStages.length) {
+                    return { key: 'done', name: 'Completed' }
+                }
+                const found = this.sortedStages.find((s) => {
+                    const k = (s.key || '').toLowerCase()
+                    const n = (s.name || '').toLowerCase()
+                    return (
+                        k === 'done' ||
+                        k.includes('done') ||
+                        k.includes('complete') ||
+                        k.includes('finish') ||
+                        n.includes('done') ||
+                        n.includes('complete') ||
+                        n.includes('finish')
+                    )
+                })
+                return found || this.sortedStages[this.sortedStages.length - 1]
+            },
+
+            get completedStageKey() {
+                return this.completedStage?.key || 'done'
+            },
+
+            get completedStageName() {
+                return this.completedStage?.name || 'Completed'
+            },
+
+            get inProgressStage() {
+                if (!this.sortedStages || !this.sortedStages.length) {
+                    return { key: 'in_progress', name: 'In Progress' }
+                }
+                const found = this.sortedStages.find((s) => {
+                    const k = (s.key || '').toLowerCase()
+                    const n = (s.name || '').toLowerCase()
+                    return (
+                        k === 'in_progress' ||
+                        k.includes('progress') ||
+                        k.includes('doing') ||
+                        n.includes('progress') ||
+                        n.includes('doing')
+                    )
+                })
+                if (found) return found
+                return this.sortedStages.length > 2
+                    ? this.sortedStages[1]
+                    : this.sortedStages[0]
+            },
+
+            get inProgressStageKey() {
+                return this.inProgressStage?.key || 'in_progress'
+            },
+
+            get inProgressStageName() {
+                return this.inProgressStage?.name || 'In Progress'
+            },
+
+            get initialStage() {
+                if (!this.sortedStages || !this.sortedStages.length) {
+                    return { key: 'todo', name: 'To Do' }
+                }
+                return this.sortedStages[0]
+            },
+
+            get initialStageKey() {
+                return this.initialStage?.key || 'todo'
+            },
+
             get totalSubtasksCount() {
                 return this.todos.reduce(
-                    (acc, t) => acc + (t.subtasks ? t.subtasks.length : 0),
+                    (acc, t) =>
+                        acc +
+                        (Array.isArray(t.subtasks) ? t.subtasks.length : 0),
                     0
                 )
             },
@@ -183,14 +316,19 @@
             get completedSubtasksCount() {
                 return this.todos.reduce((acc, t) => {
                     if (!t.subtasks || !Array.isArray(t.subtasks)) return acc
-                    return acc + t.subtasks.filter((s) => s.completed).length
+                    if (t.status === this.completedStageKey) {
+                        return acc + t.subtasks.length
+                    }
+                    return (
+                        acc + t.subtasks.filter((s) => s && s.completed).length
+                    )
                 }, 0)
             },
 
             get urgentCount() {
                 const now = new Date()
                 return this.todos.filter((t) => {
-                    if (t.status === 'done') return false
+                    if (t.status === this.completedStageKey) return false
                     if (t.priority === 'urgent') return true
                     if (t.due_date && new Date(t.due_date) < now) return true
                     return false
@@ -275,7 +413,7 @@
                             type: type,
                             payload: { action, record },
                         })
-                    } catch (e) { }
+                    } catch (e) {}
                 }
             },
 
@@ -291,26 +429,19 @@
 
                 this.updateSocketActivity(`Task: ${action}`)
 
+                const isLocal = this.isLocalAction(action, record.id)
+                const shouldNotify = !isLocal && !isBroadcast
+
                 // Normalize subtasks
-                if (
-                    typeof record.subtasks === 'string' &&
-                    record.subtasks.trim()
-                ) {
-                    try {
-                        record.subtasks = JSON.parse(record.subtasks)
-                    } catch (err) {
-                        record.subtasks = []
-                    }
-                }
-                if (!Array.isArray(record.subtasks)) record.subtasks = []
+                record.subtasks = normalizeSubtasks(record.subtasks)
 
                 if (action === 'create') {
                     const idx = this.todos.findIndex((t) => t.id === record.id)
                     if (idx === -1) {
                         this.todos.push(record)
-                        if (!isBroadcast) {
+                        if (shouldNotify) {
                             this.showToast(
-                                `✨ Live task added: "${record.title}"`,
+                                `Task added: "${record.title}"`,
                                 'info',
                                 2500
                             )
@@ -318,18 +449,46 @@
                     }
                 } else if (action === 'update') {
                     const idx = this.todos.findIndex((t) => t.id === record.id)
+                    let isMoveOnly = false
                     if (idx !== -1) {
-                        this.todos.splice(idx, 1, {
-                            ...this.todos[idx],
+                        const existingTask = this.todos[idx]
+                        isMoveOnly =
+                            Boolean(record.status) &&
+                            existingTask.status !== record.status &&
+                            (!record.title ||
+                                existingTask.title === record.title)
+
+                        let resolvedSubtasks = record.subtasks
+                        if (
+                            resolvedSubtasks.length === 0 &&
+                            (e.record?.subtasks === undefined ||
+                                e.record?.subtasks === null) &&
+                            Array.isArray(existingTask.subtasks) &&
+                            existingTask.subtasks.length > 0
+                        ) {
+                            resolvedSubtasks = existingTask.subtasks
+                        }
+
+                        const updatedRecord = {
+                            ...existingTask,
                             ...record,
-                        })
+                            subtasks: resolvedSubtasks,
+                        }
+
+                        this.todos.splice(idx, 1, updatedRecord)
                         if (this.taskForm.id === record.id && !this.modalOpen) {
-                            this.taskForm = { ...record }
+                            this.taskForm = {
+                                ...updatedRecord,
+                                subtasks: normalizeSubtasks(
+                                    updatedRecord.subtasks
+                                ),
+                            }
                         }
                     } else {
                         this.todos.push(record)
                     }
-                    if (!isBroadcast) {
+                    // Never show notifications when tasks are moved between columns
+                    if (shouldNotify && !isMoveOnly) {
                         this.showToast(
                             `Update: "${record.title}"`,
                             'info',
@@ -341,7 +500,7 @@
                     if (this.taskForm.id === record.id) {
                         this.closeTaskModal()
                     }
-                    if (!isBroadcast) {
+                    if (shouldNotify) {
                         this.showToast(
                             'Task removed via live sync',
                             'info',
@@ -361,6 +520,12 @@
 
                 this.updateSocketActivity(`Stage: ${action}`)
 
+                const isLocal = this.isLocalAction(
+                    action,
+                    record.id || record.key
+                )
+                const shouldNotify = !isLocal && !isBroadcast
+
                 if (action === 'create') {
                     const idx = this.stages.findIndex(
                         (s) => s.id === record.id || s.key === record.key
@@ -370,7 +535,7 @@
                     } else {
                         this.stages.splice(idx, 1, record)
                     }
-                    if (!isBroadcast) {
+                    if (shouldNotify) {
                         this.showToast(
                             `✨ Stage added: "${record.name}"`,
                             'info',
@@ -413,7 +578,7 @@
                             .collection('kanban_stages')
                             .unsubscribe('*')
                     }
-                } catch (e) { }
+                } catch (e) {}
                 await this.initPocketBaseRealtime()
                 this.showToast(
                     'Reconnected live socket subscription',
@@ -425,7 +590,10 @@
             // --- FILTERING & CARD RETRIEVAL ---
 
             getCardsByStatus(status) {
-                return this.todos.filter((t) => (t.status || 'todo') === status)
+                const fallback = this.initialStageKey || 'todo'
+                return this.todos.filter(
+                    (t) => (t.status || fallback) === status
+                )
             },
 
             getFilteredCards(status) {
@@ -467,28 +635,69 @@
             // --- SUBTASKS LOGIC ---
 
             countCompletedSubtasks(task) {
-                if (!task.subtasks || !Array.isArray(task.subtasks)) return 0
-                return task.subtasks.filter((s) => s.completed).length
+                if (!task || !task.subtasks || !Array.isArray(task.subtasks))
+                    return 0
+                if (task.status === this.completedStageKey) {
+                    return task.subtasks.length
+                }
+                return task.subtasks.filter((s) => s && s.completed).length
             },
 
             async toggleCardSubtask(task, subtaskId) {
-                if (!task.subtasks) return
+                if (!task.subtasks || !Array.isArray(task.subtasks)) return
                 const sub = task.subtasks.find((s) => s.id === subtaskId)
                 if (!sub) return
 
+                const prevCompleted = sub.completed
+                const prevStatus = task.status
+
                 sub.completed = !sub.completed
+                task.subtasks = normalizeSubtasks(task.subtasks)
+
+                // Dynamic stage progression:
+                const totalSubs = task.subtasks.length
+                const completedSubs = task.subtasks.filter(
+                    (s) => s.completed
+                ).length
+
+                let statusChanged = false
+                // If all subtasks are now completed, auto-advance task to completed stage
+                if (
+                    totalSubs > 0 &&
+                    completedSubs === totalSubs &&
+                    task.status !== this.completedStageKey
+                ) {
+                    task.status = this.completedStageKey
+                    statusChanged = true
+                } else if (
+                    task.status === this.completedStageKey &&
+                    completedSubs < totalSubs
+                ) {
+                    // If a subtask was unchecked while in completed stage, move back to in-progress
+                    task.status = this.inProgressStageKey
+                    statusChanged = true
+                }
+
+                this.markLocalAction('update', task.id)
                 this.broadcastLocal('TODO_SOCKET_EVENT', 'update', task)
 
                 try {
                     if (this.pb) {
-                        await this.pb.collection('todos').update(task.id, {
+                        const payload = {
                             subtasks: task.subtasks,
                             user: this.userId,
-                        })
+                        }
+                        if (statusChanged) {
+                            payload.status = task.status
+                        }
+                        await this.pb
+                            .collection('todos')
+                            .update(task.id, payload)
                     }
                 } catch (err) {
                     console.error('Failed to update subtask:', err)
-                    sub.completed = !sub.completed
+                    sub.completed = prevCompleted
+                    task.status = prevStatus
                     this.showToast('Failed to update subtask', 'error')
                 }
             },
@@ -550,24 +759,50 @@
             async changeTaskStatus(task, newStatus) {
                 const prevStatus = task.status
                 task.status = newStatus
+                task.subtasks = normalizeSubtasks(task.subtasks)
 
+                let subtasksChanged = false
+                // When moving to completed stage, mark all subtasks as completed
+                if (
+                    newStatus === this.completedStageKey &&
+                    task.subtasks.length > 0
+                ) {
+                    task.subtasks.forEach((s) => {
+                        if (!s.completed) {
+                            s.completed = true
+                            subtasksChanged = true
+                        }
+                    })
+                } else if (
+                    prevStatus === this.completedStageKey &&
+                    newStatus === this.initialStageKey &&
+                    task.subtasks.length > 0
+                ) {
+                    // When moving back to initial stage (To Do), mark subtasks as incomplete
+                    task.subtasks.forEach((s) => {
+                        if (s.completed) {
+                            s.completed = false
+                            subtasksChanged = true
+                        }
+                    })
+                }
+
+                this.markLocalAction('update', task.id)
                 this.broadcastLocal('TODO_SOCKET_EVENT', 'update', task)
 
                 try {
                     if (this.pb) {
-                        await this.pb.collection('todos').update(task.id, {
+                        const payload = {
                             status: newStatus,
                             user: this.userId,
-                        })
+                        }
+                        if (subtasksChanged) {
+                            payload.subtasks = task.subtasks
+                        }
+                        await this.pb
+                            .collection('todos')
+                            .update(task.id, payload)
                     }
-                    const stageObj = this.stages.find(
-                        (s) => s.key === newStatus
-                    )
-                    this.showToast(
-                        `Moved to ${stageObj?.name || newStatus}`,
-                        'success',
-                        1500
-                    )
                 } catch (err) {
                     console.error('Failed to update task status:', err)
                     task.status = prevStatus
@@ -615,9 +850,7 @@
                         priority: task.priority || 'medium',
                         due_date: task.due_date || '',
                         tags: task.tags || '',
-                        subtasks: Array.isArray(task.subtasks)
-                            ? JSON.parse(JSON.stringify(task.subtasks))
-                            : [],
+                        subtasks: normalizeSubtasks(task.subtasks),
                     }
                 } else {
                     this.taskForm = {
@@ -657,6 +890,7 @@
                 }
 
                 this.saving = true
+                const cleanSubtasks = normalizeSubtasks(this.taskForm.subtasks)
                 const payload = {
                     title: this.taskForm.title.trim(),
                     description: this.taskForm.description || '',
@@ -665,30 +899,35 @@
                     priority: this.taskForm.priority || 'medium',
                     due_date: this.taskForm.due_date || '',
                     tags: this.taskForm.tags || '',
-                    subtasks: Array.isArray(this.taskForm.subtasks)
-                        ? this.taskForm.subtasks
-                        : [],
+                    subtasks: cleanSubtasks,
                     user: this.userId,
                 }
 
                 try {
                     if (this.taskForm.id) {
+                        this.markLocalAction('update', this.taskForm.id)
                         const updated = await this.pb
                             .collection('todos')
                             .update(this.taskForm.id, payload)
+                        const cleanUpdated = {
+                            ...updated,
+                            subtasks: normalizeSubtasks(
+                                updated.subtasks || cleanSubtasks
+                            ),
+                        }
                         const idx = this.todos.findIndex(
                             (t) => t.id === this.taskForm.id
                         )
                         if (idx !== -1) {
                             this.todos.splice(idx, 1, {
                                 ...this.todos[idx],
-                                ...updated,
+                                ...cleanUpdated,
                             })
                         }
                         this.broadcastLocal(
                             'TODO_SOCKET_EVENT',
                             'update',
-                            updated
+                            cleanUpdated
                         )
                         this.showToast('Task updated', 'success', 2000)
                     } else {
@@ -698,11 +937,18 @@
                         const created = await this.pb
                             .collection('todos')
                             .create(payload)
-                        this.todos.push(created)
+                        this.markLocalAction('create', created.id)
+                        const cleanCreated = {
+                            ...created,
+                            subtasks: normalizeSubtasks(
+                                created.subtasks || cleanSubtasks
+                            ),
+                        }
+                        this.todos.push(cleanCreated)
                         this.broadcastLocal(
                             'TODO_SOCKET_EVENT',
                             'create',
-                            created
+                            cleanCreated
                         )
                         this.showToast('Task created', 'success', 2000)
                     }
@@ -711,7 +957,7 @@
                     console.error('Failed to save task:', err)
                     this.showToast(
                         'Error saving task: ' +
-                        (err.message || 'Unknown error'),
+                            (err.message || 'Unknown error'),
                         'error'
                     )
                 } finally {
@@ -724,6 +970,7 @@
                     return
 
                 try {
+                    this.markLocalAction('delete', taskId)
                     await this.pb.collection('todos').delete(taskId)
                     this.todos = this.todos.filter((t) => t.id !== taskId)
                     this.broadcastLocal('TODO_SOCKET_EVENT', 'delete', {
@@ -741,7 +988,7 @@
             },
 
             async clearCompletedTasks() {
-                const doneTasks = this.getCardsByStatus('done')
+                const doneTasks = this.getCardsByStatus(this.completedStageKey)
                 if (!doneTasks.length) return
                 if (
                     !confirm(`Clear all ${doneTasks.length} completed task(s)?`)
@@ -750,12 +997,15 @@
 
                 try {
                     for (const task of doneTasks) {
+                        this.markLocalAction('delete', task.id)
                         await this.pb.collection('todos').delete(task.id)
                         this.broadcastLocal('TODO_SOCKET_EVENT', 'delete', {
                             id: task.id,
                         })
                     }
-                    this.todos = this.todos.filter((t) => t.status !== 'done')
+                    this.todos = this.todos.filter(
+                        (t) => t.status !== this.completedStageKey
+                    )
                     this.showToast(
                         `Cleared ${doneTasks.length} completed tasks`,
                         'success',
@@ -866,13 +1116,14 @@
                     // Remove deleted stages from database
                     for (const id of deletedIds) {
                         try {
+                            this.markLocalAction('delete', id)
                             await this.pb.collection('kanban_stages').delete(id)
                             this.broadcastLocal(
                                 'STAGE_SOCKET_EVENT',
                                 'delete',
                                 { id }
                             )
-                        } catch (e) { }
+                        } catch (e) {}
                     }
 
                     // Move orphaned tasks to first available stage
@@ -882,6 +1133,7 @@
                         if (!remainingKeys.includes(t.status)) {
                             t.status = firstKey
                             try {
+                                this.markLocalAction('update', t.id)
                                 await this.pb.collection('todos').update(t.id, {
                                     status: firstKey,
                                     user: this.userId,
@@ -891,7 +1143,7 @@
                                     'update',
                                     t
                                 )
-                            } catch (e) { }
+                            } catch (e) {}
                         }
                     }
 
@@ -907,6 +1159,7 @@
                         }
 
                         if (st.id && !st.id.startsWith('default_')) {
+                            this.markLocalAction('update', st.id)
                             const updated = await this.pb
                                 .collection('kanban_stages')
                                 .update(st.id, payload)
@@ -920,6 +1173,7 @@
                             const created = await this.pb
                                 .collection('kanban_stages')
                                 .create(payload)
+                            this.markLocalAction('create', created.id)
                             savedStages.push(created)
                             this.broadcastLocal(
                                 'STAGE_SOCKET_EVENT',
@@ -1068,11 +1322,18 @@
                                 ...t,
                                 user: this.userId,
                             })
-                        this.todos.push(created)
+                        this.markLocalAction('create', created.id)
+                        const cleanCreated = {
+                            ...created,
+                            subtasks: normalizeSubtasks(
+                                created.subtasks || t.subtasks
+                            ),
+                        }
+                        this.todos.push(cleanCreated)
                         this.broadcastLocal(
                             'TODO_SOCKET_EVENT',
                             'create',
-                            created
+                            cleanCreated
                         )
                     }
                     this.showToast(
@@ -1146,11 +1407,14 @@
                     return false
                 }
             },
+            showToast() {},
+            removeToast() {},
+            toastAlertClass() {
+                return ''
+            },
         }
 
-        return window.withToastHelpers
-            ? window.withToastHelpers(baseComponent)
-            : baseComponent
+        return baseComponent
     }
 
     global.kanbanApp = kanbanApp

@@ -117,23 +117,6 @@
 
     <!-- Stages / Columns Customization Modal Component -->
     <%- include('kanban-stages-modal.ejs') %>
-
-    <!-- Toast Notifications Container -->
-    <div class="toast toast-end toast-bottom z-[100]">
-        <template x-for="toast in toasts" :key="toast.id">
-            <div
-                :class="`alert ${toastAlertClass(toast.type)} shadow-xl text-xs sm:text-sm py-2 px-4 rounded-xl flex items-center gap-2 border`"
-            >
-                <span x-text="toast.message"></span>
-                <button
-                    @click="removeToast(toast.id)"
-                    class="btn btn-circle btn-ghost btn-xs h-5 min-h-0 w-5"
-                >
-                    ✕
-                </button>
-            </div>
-        </template>
-    </div>
 </div>
 
 <!-- Raw Initial Data from PocketPages Loader -->
@@ -144,5 +127,4 @@
         user: data.user || {}
     }) %>
 </script>
-<script src="/js/toast-helper.js"></script>
-<script src="/js/kanban-app.js"></script>
+<script src="/js/kanban-app.js?v=<%= Date.now() %>"></script>
