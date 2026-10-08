@@ -1,5 +1,5 @@
 /**
- * Flame Kanban Board - Client Application Module
+ * Flame To Do Board - Client Application Module
  * Handles state management, drag-and-drop, customizable stages,
  * subtask checklists, and real-time socket synchronization.
  */
@@ -355,9 +355,6 @@
             get completedSubtasksCount() {
                 return this.todos.reduce((acc, t) => {
                     if (!t.subtasks || !Array.isArray(t.subtasks)) return acc
-                    if (t.status === this.completedStageKey) {
-                        return acc + t.subtasks.length
-                    }
                     return (
                         acc + t.subtasks.filter((s) => s && s.completed).length
                     )
@@ -680,9 +677,6 @@
             countCompletedSubtasks(task) {
                 if (!task || !task.subtasks || !Array.isArray(task.subtasks))
                     return 0
-                if (task.status === this.completedStageKey) {
-                    return task.subtasks.length
-                }
                 return task.subtasks.filter((s) => s && s.completed).length
             },
 
@@ -692,34 +686,9 @@
                 if (!sub) return
 
                 const prevCompleted = sub.completed
-                const prevStatus = task.status
 
                 sub.completed = !sub.completed
                 task.subtasks = normalizeSubtasks(task.subtasks)
-
-                // Dynamic stage progression:
-                const totalSubs = task.subtasks.length
-                const completedSubs = task.subtasks.filter(
-                    (s) => s.completed
-                ).length
-
-                let statusChanged = false
-                // If all subtasks are now completed, auto-advance task to completed stage
-                if (
-                    totalSubs > 0 &&
-                    completedSubs === totalSubs &&
-                    task.status !== this.completedStageKey
-                ) {
-                    task.status = this.completedStageKey
-                    statusChanged = true
-                } else if (
-                    task.status === this.completedStageKey &&
-                    completedSubs < totalSubs
-                ) {
-                    // If a subtask was unchecked while in completed stage, move back to in-progress
-                    task.status = this.inProgressStageKey
-                    statusChanged = true
-                }
 
                 this.markLocalAction('update', task.id)
                 this.broadcastLocal('TODO_SOCKET_EVENT', 'update', task)
@@ -730,9 +699,6 @@
                             subtasks: task.subtasks,
                             user: this.userId,
                         }
-                        if (statusChanged) {
-                            payload.status = task.status
-                        }
                         await this.pb
                             .collection('todos')
                             .update(task.id, payload)
@@ -740,7 +706,6 @@
                 } catch (err) {
                     console.error('Failed to update subtask:', err)
                     sub.completed = prevCompleted
-                    task.status = prevStatus
                     this.showToast('Failed to update subtask', 'error')
                 }
             },
@@ -1269,7 +1234,7 @@
                     {
                         title: 'Test Live Sockets & Subtasks',
                         description:
-                            'Open a second browser tab or window at /kanban. Toggle subtasks or drag cards to watch both boards update live instantaneously!',
+                            'Open a second browser tab or window. Toggle subtasks or drag cards to watch both boards update live instantaneously!',
                         status: 'in_progress',
                         priority: 'urgent',
                         tags: 'realtime, sockets',
@@ -1277,7 +1242,7 @@
                         subtasks: [
                             {
                                 id: 'st_3',
-                                title: 'Open /kanban in another browser window',
+                                title: 'Open this page in another browser window',
                                 completed: false,
                             },
                             {
@@ -1380,7 +1345,7 @@
                         )
                     }
                     this.showToast(
-                        'Loaded starter Kanban tasks with subtasks!',
+                        'Loaded starter tasks with subtasks!',
                         'success',
                         2500
                     )

@@ -1,5 +1,5 @@
 /**
- * Loader for the Kanban Board page.
+ * Loader for the To Do page.
  * Checks authentication and loads todos and stages for the current user.
  * @type {import('pocketpages').PageDataLoaderFunc}
  */
@@ -73,10 +73,10 @@ module.exports = function (context) {
                 }
             })
         } catch (e) {
-            console.error('Failed to fetch todos for kanban:', e)
+            console.error('Failed to fetch todos:', e)
         }
 
-        // Fetch custom kanban stages
+        // Fetch custom stages
         let stages = []
         try {
             const stageRecords = $app.findRecordsByFilter(
@@ -97,7 +97,7 @@ module.exports = function (context) {
                 user: s.getString('user'),
             }))
         } catch (e) {
-            console.error('Failed to fetch kanban stages:', e)
+            console.error('Failed to fetch stages:', e)
         }
 
         // Fallback default stages if user hasn't configured any yet
@@ -146,7 +146,7 @@ module.exports = function (context) {
             },
         }
     } catch (e) {
-        console.error('Failed to load kanban page data:', e)
+        console.error('Failed to load page data:', e)
         return {
             todos: [],
             stages: [

@@ -1,27 +1,42 @@
-<!-- Kanban Quick Stats Cards Component -->
+<!-- Quick Stats Cards Component -->
 <div
-    class="mb-6 grid grid-cols-2 gap-3 sm:gap-4"
-    :class="(sortedStages.length + 2) <= 4 ? 'sm:grid-cols-4' : ((sortedStages.length + 2) <= 6 ? 'sm:grid-cols-3 lg:grid-cols-6' : 'sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6')"
+    class="mb-6 grid grid-cols-2 gap-3 sm:gap-4 md:flex md:flex-wrap md:items-stretch lg:flex-nowrap lg:gap-4"
 >
-    <!-- Overall Total Tasks -->
+    <!-- Combined Total Tasks & Subtasks -->
     <div
-        class="rounded-xl border border-base-300 bg-base-200/50 p-3.5 backdrop-blur-sm sm:p-4"
+        class="rounded-xl border border-base-300 bg-base-200/50 p-3.5 backdrop-blur-sm sm:p-4 md:flex-1 md:min-w-[150px]"
     >
-        <div class="text-xs font-medium text-base-content/60">Total Tasks</div>
-        <div class="mt-1 flex items-baseline gap-2">
+        <div
+            class="flex items-center justify-between text-xs font-medium text-base-content/60"
+        >
+            <span>Total Tasks</span>
             <span
-                class="text-2xl font-black text-base-content"
-                x-text="todos.length"
-                >0</span
+                class="text-xs font-semibold text-info"
+                x-text="totalSubtasksCount ? (completedSubtasksCount + '/' + totalSubtasksCount + ' subs') : '0 subs'"
+                >0/0 subs</span
             >
-            <span class="text-xs text-base-content/40">items</span>
+        </div>
+        <div class="mt-1 flex items-baseline justify-between">
+            <div class="flex items-baseline gap-2">
+                <span
+                    class="text-2xl font-black text-base-content"
+                    x-text="todos.length"
+                    >0</span
+                >
+                <span class="text-xs text-base-content/40">items</span>
+            </div>
+            <span
+                class="text-xs font-medium text-info/70"
+                x-text="totalSubtasksCount ? Math.round((completedSubtasksCount / totalSubtasksCount) * 100) + '%' : '0%'"
+                >0%</span
+            >
         </div>
     </div>
 
     <!-- Dynamic Stage Totals -->
     <template x-for="st in sortedStages" :key="st.id || st.key">
         <div
-            class="rounded-xl border p-3.5 backdrop-blur-sm transition-all duration-200 sm:p-4"
+            class="rounded-xl border p-3.5 backdrop-blur-sm transition-all duration-200 sm:p-4 md:flex-1 md:min-w-[140px]"
             :class="stageCardClass(st.color)"
         >
             <div
@@ -51,24 +66,5 @@
             </div>
         </div>
     </template>
-
-    <!-- Subtasks Progress -->
-    <div
-        class="rounded-xl border border-info/30 bg-info/5 p-3.5 backdrop-blur-sm sm:p-4"
-    >
-        <div class="text-xs font-medium text-info">Subtasks Progress</div>
-        <div class="mt-1 flex items-baseline gap-2">
-            <span
-                class="text-2xl font-black text-info"
-                x-text="completedSubtasksCount + '/' + totalSubtasksCount"
-                >0/0</span
-            >
-            <span
-                class="text-xs text-info/60"
-                x-text="totalSubtasksCount ? Math.round((completedSubtasksCount / totalSubtasksCount) * 100) + '%' : '0%'"
-                >0%</span
-            >
-        </div>
-    </div>
 </div>
 

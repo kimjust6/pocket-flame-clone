@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791479326304,
+    "generatedTime": 1791484587645,
     "data": [
         {
             "type": "file",
@@ -52,8 +52,8 @@
         {
             "type": "file",
             "name": "pb_public/js/kanban-app.js",
-            "size": 54007,
-            "hash": "54dfaf923ae8621a66e32152b080c058d17ebd0f4c34cf2675e890e3c957f159"
+            "size": 54332,
+            "hash": "04f059e87754901071905f9634783fbec82c532870d965367ac4917946a7244e"
         },
         {
             "type": "file",
@@ -588,8 +588,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/app.css",
-            "size": 160535,
-            "hash": "1e67a04b880a2ee48584351c3f1a9db5cba026ad617b6b7359058d67c1409f2f"
+            "size": 240755,
+            "hash": "7908b3fdf3038e49980616402a5128c1d877335d4fb81e417e132644d17e7a57"
         },
         {
             "type": "folder",
@@ -614,8 +614,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+config.js",
-            "size": 8721,
-            "hash": "5314ba7bb92b8664dba5d0bc6daf72505bd61e94204ae572588d1f8f1bf8180e"
+            "size": 11503,
+            "hash": "147e6ad6eb3d70c5fb06f9c25132eaaa551574f7a477b11e516c8404b2b96c0a"
         },
         {
             "type": "folder",
@@ -678,8 +678,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/auth/logout/index.ejs",
-            "size": 79,
-            "hash": "27d9f4d72dd9cf4ee8260ea5557ef40e52881f51cc821f124490e0f5d26999d0"
+            "size": 158,
+            "hash": "d6634251872d5b963a2f65efc10057892a90580b748ac0958c00af21598b868c"
         },
         {
             "type": "file",
@@ -792,8 +792,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/index.ejs",
-            "size": 56665,
-            "hash": "7f4144818575c71e2aaa67f4d663ad2b8c16f8be512a10c49cc689b4545135b1"
+            "size": 57107,
+            "hash": "18829fd83b6f1675e837a64b74a899a2cb8a2ec8b69e702cfb048678bf09caa0"
         },
         {
             "type": "file",
@@ -860,8 +860,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-stats.ejs",
-            "size": 2639,
-            "hash": "fea1dcde4d8c4f73c690d2e1dbeb224de68375c26ee905893072ee9485a90937"
+            "size": 2778,
+            "hash": "52c4bff2d718e5fa21233ad22bf0791562302af1d28a84cde68c34af28367753"
         },
         {
             "type": "file",
