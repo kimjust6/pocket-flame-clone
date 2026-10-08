@@ -8,11 +8,17 @@ module.exports = function shellData() {
         searchOpen: false,
         darkMode: localStorage.getItem('theme') === 'dark',
         navigation: [
-            { title: 'Settings', href: '/settings', desktop: true, mobile: true },
+            { title: 'Kanban', href: '/kanban', desktop: true, mobile: true },
+            {
+                title: 'Settings',
+                href: '/settings',
+                desktop: true,
+                mobile: true,
+            },
         ],
         headerVisible: true,
 
-        init() { },
+        init() {},
 
         toggleTheme() {
             this.darkMode = !this.darkMode
