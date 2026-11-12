@@ -503,7 +503,7 @@
 <%- JSON.stringify({
     apps: data.applications || [],
     categories: data.categories || [],
-    bookmarksByCategory: data.bookmarksByCategory || {}
+    bookmarksByCategory: data.bookmarksByCategory || []
 }) %>
 </script>
 <script src="/js/toast-helper.js"></script>
@@ -514,7 +514,7 @@
             searchQuery: '',
             apps: initialData.apps || [],
             categories: initialData.categories || [],
-            bookmarksByCategory: initialData.bookmarksByCategory || {},
+            bookmarksByCategory: initialData.bookmarksByCategory || [],
             userId: '<%= locals.auth ? locals.auth.id : "" %>',
             lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
             lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',

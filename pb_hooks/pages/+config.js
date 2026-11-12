@@ -133,6 +133,40 @@ const authPlugin = (config) => {
                     $apis.enrichRecord(request.event, validAuthRecord);
                     request.auth = validAuthRecord;
                     request.authToken = cookieRecordAuth.token;
+
+                    // Automatically refresh tokens that have less than 30 days remaining (e.g. old 7-day tokens)
+                    try {
+                        const claims = $security.parseUnverifiedJWT(cookieRecordAuth.token);
+                        const exp = claims && claims.exp ? Number(claims.exp) : 0;
+                        const now = Math.floor(Date.now() / 1000);
+                        if (exp && (exp - now < 30 * 86400)) {
+                            const newToken = validAuthRecord.newAuthToken();
+                            let maxAge = 31536000;
+                            try {
+                                const settingsRecords = $app.findRecordsByFilter(
+                                    "flame_settings",
+                                    "user = {:user}",
+                                    "",
+                                    1,
+                                    0,
+                                    { user: validAuthRecord.id }
+                                );
+                                if (settingsRecords && settingsRecords.length > 0) {
+                                    const userMaxAge = settingsRecords[0].getInt("google_auth_max_age");
+                                    if (userMaxAge > 0) maxAge = userMaxAge;
+                                }
+                            } catch (_) {}
+
+                            const cookieVal = encodeURIComponent(JSON.stringify({
+                                token: newToken,
+                                record: toPlainObject(validAuthRecord)
+                            }));
+                            response.header("Set-Cookie", `pb_auth=${cookieVal}; Path=/; SameSite=Lax; Max-Age=${maxAge}`);
+                            request.authToken = newToken;
+                        }
+                    } catch (refreshErr) {
+                        dbg(`error auto-refreshing auth token: ${refreshErr}`);
+                    }
                 } catch (e) {
                     dbg(`error fetching auth record: ${e}`);
                 }
@@ -212,17 +246,35 @@ const authPlugin = (config) => {
             };
 
             api.signOut = () => {
-                api.response.cookie("pb_auth", "");
+                api.response.header("Set-Cookie", "pb_auth=; Path=/; SameSite=Lax; Max-Age=0");
             };
 
             api.signIn = (authData) => {
                 const { record, token } = authData;
                 if (!record) throw new Error("No auth record found");
                 dbg(`signing in with token and saving to pb_auth cookie: ${record.id} ${token}`);
-                api.response.cookie("pb_auth", {
+
+                let maxAge = 31536000;
+                try {
+                    const settingsRecords = $app.findRecordsByFilter(
+                        "flame_settings",
+                        "user = {:user}",
+                        "",
+                        1,
+                        0,
+                        { user: record.id }
+                    );
+                    if (settingsRecords && settingsRecords.length > 0) {
+                        const userMaxAge = settingsRecords[0].getInt("google_auth_max_age");
+                        if (userMaxAge > 0) maxAge = userMaxAge;
+                    }
+                } catch (_) {}
+
+                const cookieVal = encodeURIComponent(JSON.stringify({
                     token,
                     record: toPlainObject(record)
-                });
+                }));
+                api.response.header("Set-Cookie", `pb_auth=${cookieVal}; Path=/; SameSite=Lax; Max-Age=${maxAge}`);
             };
         }
     };

@@ -15,8 +15,8 @@ function shellQuoteSingle(value) {
     return `'${value.replace(/'/g, `"'"'`)}'`;
 }
 
-const workspaceRoot = process.cwd();
 const isWindows = process.platform === "win32";
+const workspaceRoot = process.cwd();
 
 const targetCwd = isWindows ? toWslPath(workspaceRoot) : workspaceRoot;
 const deployCmd = `cd ${shellQuoteSingle(targetCwd)} && npx -y -p node@24 -p phio phio deploy blinks 2>&1`;

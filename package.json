@@ -60,5 +60,9 @@
   ],
   "optionalDependencies": {
     "@esbuild/linux-x64": "^0.28.2"
+  },
+  "overrides": {
+    "basic-ftp": "^6.2.2",
+    "postcss-selector-parser": "^7.1.6"
   }
 }

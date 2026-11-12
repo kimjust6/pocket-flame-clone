@@ -1,0 +1,130 @@
+<div
+    x-data="kanbanApp()"
+    x-init="init()"
+    class="mx-auto min-h-screen max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+>
+    <!-- Top Header & Live Socket Status Component -->
+    <%- include('kanban-header.ejs') %>
+
+    <!-- Summary Metrics Cards Component -->
+    <%- include('kanban-stats.ejs') %>
+
+    <!-- Search & Filter Controls Component -->
+    <%- include('kanban-toolbar.ejs') %>
+
+    <!-- TO DO BOARD COLUMNS GRID (CUSTOMIZABLE STAGES) -->
+    <div
+        class="grid gap-6"
+        :style="`grid-template-columns: repeat(${Math.max(1, stages.length)}, minmax(280px, 1fr)); overflow-x: auto; padding-bottom: 1.5rem;`"
+    >
+        <template x-for="(col, index) in sortedStages" :key="col.id || col.key">
+            <div
+                class="flex flex-col rounded-2xl border border-base-300 bg-base-200/40 backdrop-blur-md transition-all duration-200"
+                :class="dragOverColumn === col.key ? 'ring-2 ring-primary border-primary bg-primary/5 shadow-lg' : ''"
+                @dragover.prevent="onDragOverCol(col.key)"
+                @dragleave="onDragLeaveCol(col.key)"
+                @drop="onDropCol(col.key)"
+            >
+                <!-- Column Header -->
+                <div
+                    class="flex items-center justify-between border-b border-base-300 px-4 py-3.5"
+                >
+                    <div class="flex items-center gap-2">
+                        <span
+                            class="h-2.5 w-2.5 rounded-full"
+                            :class="colorDotClass(col.color)"
+                        ></span>
+                        <h2
+                            class="text-sm font-bold text-base-content"
+                            x-text="col.name"
+                        ></h2>
+                        <span
+                            class="badge badge-sm font-semibold"
+                            :class="badgeColorClass(col.color)"
+                            x-text="getFilteredCards(col.key).length"
+                            >0</span
+                        >
+                    </div>
+
+                    <div class="flex items-center gap-1">
+                        <button
+                            @click="openTaskModal(null, col.key)"
+                            class="btn btn-square btn-ghost btn-xs text-base-content/70 hover:bg-base-300 hover:text-base-content"
+                            :title="`Add task to ${col.name}`"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4v16m8-8H4"
+                                />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Column Cards Container / Drop Zone -->
+                <div class="flex min-h-[440px] flex-1 flex-col gap-3 p-3">
+                    <template
+                        x-for="task in getFilteredCards(col.key)"
+                        :key="task.id"
+                    >
+                        <!-- Task Card Component -->
+                        <%- include('kanban-card.ejs') %>
+                    </template>
+
+                    <!-- Empty State in Column -->
+                    <div
+                        x-show="getFilteredCards(col.key).length === 0"
+                        class="flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-base-300/80 p-6 text-center text-xs text-base-content/40"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="mb-2 h-7 w-7 opacity-30"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="1.5"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                            />
+                        </svg>
+                        <span>No tasks in this stage</span>
+                        <button
+                            @click="openTaskModal(null, col.key)"
+                            class="mt-2 text-xs font-semibold text-primary hover:underline"
+                        >
+                            + Add a card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Task Create & Edit Modal Component -->
+    <%- include('kanban-task-modal.ejs') %>
+
+    <!-- Stages / Columns Customization Modal Component -->
+    <%- include('kanban-stages-modal.ejs') %>
+</div>
+
+<!-- Raw Initial Data from PocketPages Loader -->
+<script type="application/json" id="kanban-initial-data">
+    <%- JSON.stringify({
+        todos: data.todos || [],
+        stages: data.stages || [],
+        user: data.user || {}
+    }) %>
+</script>
+<script src="/js/kanban-app.js?v=<%= Date.now() %>"></script>
