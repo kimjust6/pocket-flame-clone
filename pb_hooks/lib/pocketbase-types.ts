@@ -117,6 +117,7 @@ export type BookmarkCategoriesRecord = {
     name: string
     order?: number
     updated: IsoAutoDateString
+    user?: RecordIdString
 }
 
 export type BookmarksRecord = {

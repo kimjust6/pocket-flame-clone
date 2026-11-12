@@ -74,9 +74,10 @@ module.exports = function (context) {
 
         let categories = [];
         try {
-            const catRecords = $app.findRecordsByFilter("bookmark_categories", "1=1", "order, name", 100, 0);
+            const catRecords = $app.findRecordsByFilter("bookmark_categories", userFilter, "order, name", 100, 0, filterParams);
             categories = catRecords.map(cat => ({
                 id: cat.id,
+                user: cat.getString("user"),
                 name: cat.getString("name"),
                 order: cat.getInt("order")
             }));
@@ -84,10 +85,7 @@ module.exports = function (context) {
 
         let bookmarks = [];
         try {
-            let bRecords = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
-            if (!bRecords || bRecords.length === 0) {
-                bRecords = $app.findRecordsByFilter("bookmarks", "1=1", "order, name", 1000, 0);
-            }
+            const bRecords = $app.findRecordsByFilter("bookmarks", userFilter, "order, name", 1000, 0, filterParams);
             bookmarks = bRecords.map(b => ({
                 id: b.id,
                 user: b.getString("user"),

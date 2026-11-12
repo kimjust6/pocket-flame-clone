@@ -220,7 +220,7 @@
 <%- JSON.stringify({
     apps: data.applications || [],
     categories: data.categories || [],
-    bookmarksByCategory: data.bookmarksByCategory || {}
+    bookmarksByCategory: data.bookmarksByCategory || []
 }) %>
 </script>
 <script>
@@ -230,7 +230,7 @@ function flameDashboard() {
         searchQuery: '',
         apps: initialData.apps || [],
         categories: initialData.categories || [],
-        bookmarksByCategory: initialData.bookmarksByCategory || {},
+        bookmarksByCategory: initialData.bookmarksByCategory || [],
         userId: '<%= locals.auth ? locals.auth.id : "" %>',
         lat: '<%= locals.settings ? locals.settings.weather_lat : "43.6532" %>',
         lon: '<%= locals.settings ? locals.settings.weather_lon : "-79.3832" %>',
@@ -387,7 +387,7 @@ function flameDashboard() {
                     alert('Category name is required.');
                     return;
                 }
-                await this.pb.collection('bookmark_categories').create(this.categoryForm);
+                await this.pb.collection('bookmark_categories').create({ ...this.categoryForm, user: this.userId });
                 window.location.reload();
             } catch (e) {
                 alert('Failed to add category: ' + e.message);

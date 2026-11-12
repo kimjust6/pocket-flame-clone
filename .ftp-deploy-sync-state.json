@@ -1,7 +1,7 @@
 {
     "description": "DO NOT DELETE THIS FILE. This file is used to keep track of which files have been synced in the most recent deployment. If you delete this file a resync will need to be done (which can take a while) - read more: https://github.com/SamKirkland/FTP-Deploy-Action",
     "version": "1.0.0",
-    "generatedTime": 1791484587645,
+    "generatedTime": 1794495150316,
     "data": [
         {
             "type": "file",
@@ -52,8 +52,14 @@
         {
             "type": "file",
             "name": "pb_public/js/kanban-app.js",
-            "size": 54332,
-            "hash": "04f059e87754901071905f9634783fbec82c532870d965367ac4917946a7244e"
+            "size": 54315,
+            "hash": "b950bb307f90725b0eb6d44e1023497d93e3ba1ff54bd0974fa4bab201e454f5"
+        },
+        {
+            "type": "file",
+            "name": "pb_migrations/1783500000_user_scoped_bookmark_categories.js",
+            "size": 1591,
+            "hash": "9092478392c3a3c5fd28a302417fc4c9abd4982b6cb454c87a2fcc1acd2e5e50"
         },
         {
             "type": "file",
@@ -572,8 +578,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/index.ejs",
-            "size": 25422,
-            "hash": "beb16e003512ab38767038e2fa4b9f3130f9fa5c5a32a62f05d8615ff969282f"
+            "size": 25448,
+            "hash": "b6aa4fdcd2a3d0a7b2579d136b36f9b3f56d12fc05ff333d08420f45eb5f832c"
         },
         {
             "type": "folder",
@@ -602,8 +608,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/+load.js",
-            "size": 2875,
-            "hash": "7a9b434d813e6a57d6cd382f7e0c385ade0020a18fd92f4f16b1bececeeea7e8"
+            "size": 2728,
+            "hash": "df2f6bc5fb6c504fe91f65c5a98d6425dba4656b10e52442e9d70abcaeeb2968"
         },
         {
             "type": "file",
@@ -702,8 +708,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/shell-data.js",
-            "size": 1557,
-            "hash": "e6c0c6021676a518d5684a94143e9f5bbab5894b506a390453eb4c17b1b61590"
+            "size": 1556,
+            "hash": "590a89a6a7d779ec2053d645188403de16c2e6a450481d1255e526badb544363"
         },
         {
             "type": "file",
@@ -726,8 +732,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/_private/header.ejs",
-            "size": 5576,
-            "hash": "5e5b837931cd71d34f774f1cab775dde498c47b55486962fc76e56f7c40d0d50"
+            "size": 5569,
+            "hash": "4b94a8616247d7e1cf4f66f3f95cecb83d583e2384c1442cc69c87273adbc177"
         },
         {
             "type": "file",
@@ -768,8 +774,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/index.ejs",
-            "size": 32007,
-            "hash": "655f57fc31fb000cd23f21835aaf706ebaf4af14289880aea21637d02851cb11"
+            "size": 32033,
+            "hash": "723394addb82ac49c3759b0451c830aad5eda923400c537ae166d05bdcbb0464"
         },
         {
             "type": "file",
@@ -780,8 +786,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/+load.js",
-            "size": 2876,
-            "hash": "23440cbecb348f2ba229a411413ab39a3f141d22b4677d8ac78681773aa8ddef"
+            "size": 2729,
+            "hash": "5bad86bd7f1bba1b3089f9d3bf972a8ab61be197260c565a6c80323dacd21439"
         },
         {
             "type": "file",
@@ -792,14 +798,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/index.ejs",
-            "size": 57107,
-            "hash": "18829fd83b6f1675e837a64b74a899a2cb8a2ec8b69e702cfb048678bf09caa0"
+            "size": 57228,
+            "hash": "abf8cb8fd8ce56bc24a1bfc51bdef4b15afc344380144a1ea9a9b489455de5f1"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/settings/+load.js",
-            "size": 4874,
-            "hash": "79b0c7cbe3981cf4a9c545dc9e1096e1780caf8d3fb1f399d153de4b754fd469"
+            "size": 4775,
+            "hash": "82c61286d3f32cfc4652da82dc755a40a732b177aaa95e6c19c8c386e8134e28"
         },
         {
             "type": "file",
@@ -832,8 +838,8 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/index.ejs",
-            "size": 5692,
-            "hash": "33e2ac6027e9eb222b15c025055f3402c509ae331ecc8aa456cce241078fdf32"
+            "size": 5691,
+            "hash": "1d5cb385a42255976b5358963e4694f0a31f2b97ae973bf989f713bd4f994a9f"
         },
         {
             "type": "folder",
@@ -842,14 +848,14 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/+load.js",
-            "size": 5982,
-            "hash": "ca1984a349100a5721224ef1af9aa723572720de115c89f64d063148c1ed217a"
+            "size": 5943,
+            "hash": "aae0aa7fab5a37a1307d031e735cc59e0cd8d2145cb72fb2aa5a2a1aaf15a941"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-toolbar.ejs",
-            "size": 2220,
-            "hash": "1b931d68624f90701bfd337767ebd5b0272e0da007d1fec6b423d6f12a5ccf83"
+            "size": 2213,
+            "hash": "60ce4d2f439734950f8f50e3ffedc2aa78d08b4dfcf923c93c69c34049343bcc"
         },
         {
             "type": "file",
@@ -860,20 +866,20 @@
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-stats.ejs",
-            "size": 2778,
-            "hash": "52c4bff2d718e5fa21233ad22bf0791562302af1d28a84cde68c34af28367753"
+            "size": 2771,
+            "hash": "67b1cb0eba3d3b09fd30463c76a6877735f660a0b0f6fb21dde1187cf35763fb"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-stages-modal.ejs",
-            "size": 6538,
-            "hash": "1e634aa9491b121c05e1783bbb1a8b668a84f7b9718e2920fc378e8b2f7284d3"
+            "size": 6531,
+            "hash": "7894658511d07a1192cdb7e787876a04b91ae4d0974813274ba8bdc5fbf7d9b7"
         },
         {
             "type": "file",
             "name": "pb_hooks/pages/(navbarlayout)/kanban/_private/kanban-header.ejs",
-            "size": 7092,
-            "hash": "3bb27965c7847918be27232083600d5e44f94f56e3933c8f04b46b528ae85d9c"
+            "size": 7084,
+            "hash": "e395e6184327ce31d326b9644128bac78628967158542d3634de3fc9aa3289c7"
         },
         {
             "type": "file",
@@ -912,8 +918,8 @@
         {
             "type": "file",
             "name": "pb_hooks/lib/pocketbase-types.ts",
-            "size": 8700,
-            "hash": "c505ee33445812ef01044e46ceeadb2149facdbf2e68d6d05f8db0f4cb0ba861"
+            "size": 8726,
+            "hash": "18cbbb5655fb76350b5f9a129b4457d5d6c0cb8df0ed5f5f7c953630d1584d89"
         },
         {
             "type": "file",
